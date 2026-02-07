@@ -104,7 +104,6 @@ pub fn load_pcd_xyzrgb(file_path: &str) -> Result<Vec<PointXYZ>> {
     Ok(points)
 }
 
-
 pub fn save_pcd(points: &[PointXYZNormal], file_path: &str) -> Result<()> {
     let mut writer = pcd_rs::WriterInit {
         width: 1,

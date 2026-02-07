@@ -1,20 +1,19 @@
 use core::f64;
-use std::num::{NonZero, NonZeroUsize};
+use std::{collections::HashMap, num::{NonZero, NonZeroUsize}};
 
 use anyhow::{Context, Result};
 use nalgebra::{Matrix3, SymmetricEigen, Vector3};
 use ndarray::Array2;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use remove_unnecessary_points::{
-    oprate_pcd::{
+    convert_2d_xy::project_to_xy_grid, oprate_pcd::{
         PointXYZ, PointXYZCovs, PointXYZWithShapeFeat, load_pcd_xyz, load_pcd_xyzrgb,
         save_pcd_with_covs, save_pcd_with_shape_feats,
-    },
-    voxelize::voxel_downsample_array2,
+    }, plot::plot_xy_grid_heatmap, voxelize::voxel_downsample_array2
 };
 
 const K_NEIGHBORS: usize = 20;
-const VOXEL_SIZE: f32 = 0.1;
+const VOXEL_SIZE: f32 = 0.2;
 const PLANARITY_THRESHOLD: f64 = 0.6;
 const LINEARITY_THRESHOLD: f64 = 0.5;
 const SCATTERING_THRESHOLD: f64 = 0.2;
@@ -23,60 +22,27 @@ const SAVE_ORIGINAL_PCD_PATH: &str = "data/output/voxelized-H927-hallway-01.pcd"
 const SAVE_REMOVED_PCD_PATH: &str =
     "data/output/removed-voxelized-H927-hallway-01.pcd";
 
+
 fn main() -> Result<()> {
     let pcd = load_pcd_xyz(PCD_PATH).context("Failed to load the pcd")?;
     // let pcd = load_pcd_xyzrgb(PCD_PATH).context("Failed to load the pcd")?;
 
-    println!("=== Partameteres ===");
+    println!("=== Parameters ===");
     println!("Input PCD path: {}", PCD_PATH);
-    println!("LOaded points: {}", pcd.len());
+    println!("Loaded points: {}", pcd.len());
     println!("Voxel size: {}", VOXEL_SIZE);
-    println!("K neighbors: {}", K_NEIGHBORS);
-    println!("Planarity threshold: {}", PLANARITY_THRESHOLD);
-    println!("Scattering threshold: {}", SCATTERING_THRESHOLD);
     println!("====================");
 
-    let pts = point_xyz_to_array2(&pcd);
+    // let pts = point_xyz_to_array2(&pcd);
 
-    let voxelized_pts = voxel_downsample_array2(&pts, VOXEL_SIZE);
+    let converted_2d_grid = project_to_xy_grid(&pcd, VOXEL_SIZE, 0.0, 1.8);
 
-    let start = std::time::Instant::now();
-
-    let pts_vec: Vec<[f32; 3]> = voxelized_pts
-        .outer_iter()
-        .map(|row| [row[0], row[1], row[2]])
-        .collect();
-
-    let pts_kdtree = kiddo::ImmutableKdTree::new_from_slice(&pts_vec);
-
-    // let pts_covs = compute_covariances(&voxelized_pts, &pts_kdtree);
-    let shape_feats = compute_shape_features(&voxelized_pts, &pts_kdtree, K_NEIGHBORS);
-
-    // let pcd_with_covs = convert_to_pcd_from_vec(&pts_vec, &pts_covs);
-    let pcd_with_shape_feats = convert_to_pcd_from_vec(&pts_vec, &shape_feats);
-
-    let removed_pcd = remove_unnecessary_points(&pcd_with_shape_feats)?;
-    let elapsed = start.elapsed();
-
-    save_pcd_with_shape_feats(&removed_pcd, SAVE_REMOVED_PCD_PATH)?;
-    println!(
-        "Saved removed unnecessary points pcd to {}",
-        SAVE_REMOVED_PCD_PATH
-    );
-
-    // save_pcd_with_covs(&pcd_with_covs, SAVE_PCD_PATH)?;
-    save_pcd_with_shape_feats(&pcd_with_shape_feats, SAVE_ORIGINAL_PCD_PATH)?;
-    println!(
-        "Saved voxelized pcd with shape features to {}",
-        SAVE_ORIGINAL_PCD_PATH
-    );
-
-    println!("=== Computation Results ===");
-    println!("Computation time: {:.2?}", elapsed);
-    println!("Removed points: {}", removed_pcd.len());
+    let save_path = format!("data/output/2d-xy/converted-2d-grid_voxel-{}.png", VOXEL_SIZE);
+    plot_xy_grid_heatmap(&converted_2d_grid, VOXEL_SIZE, &save_path, "XY Grid: count", |cell| cell.z_range() as f64)?;
 
     Ok(())
 }
+
 
 fn remove_unnecessary_points(
     pcd_with_shape_feats: &Vec<PointXYZWithShapeFeat>,

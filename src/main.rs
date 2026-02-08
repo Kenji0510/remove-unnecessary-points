@@ -1,14 +1,21 @@
 use core::f64;
-use std::{collections::HashMap, num::{NonZero, NonZeroUsize}};
+use std::{
+    collections::HashMap,
+    num::{NonZero, NonZeroUsize},
+};
 
 use anyhow::{Context, Result};
 use nalgebra::{Matrix3, SymmetricEigen, Vector3};
 use ndarray::Array2;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use remove_unnecessary_points::{
-    convert_2d_xy::{CellStats, project_to_xy_grid}, oprate_pcd::{
-        PointXYZ, PointXYZCovs, PointXYZWithShapeFeat, load_pcd_xyz, load_pcd_xyzrgb, save_pcd, save_pcd_with_covs, save_pcd_with_shape_feats, save_xyz_pcd
-    }, plot::plot_xy_grid_heatmap, voxelize::voxel_downsample_array2
+    convert_2d_xy::{CellStats, project_to_xy_grid},
+    oprate_pcd::{
+        PointXYZ, PointXYZCovs, PointXYZWithShapeFeat, load_pcd_xyz, load_pcd_xyzrgb, save_pcd,
+        save_pcd_with_covs, save_pcd_with_shape_feats, save_xyz_pcd,
+    },
+    plot::plot_xy_grid_heatmap,
+    voxelize::voxel_downsample_array2,
 };
 
 const K_NEIGHBORS: usize = 20;
@@ -24,7 +31,6 @@ const MIN_Z: f32 = -0.5;
 const MAX_Z: f32 = 1.5;
 const MIN_Z_RANGE: f32 = 0.1;
 const MAX_Z_RANGE: f32 = 1.75;
-
 
 fn main() -> Result<()> {
     let pcd = load_pcd_xyz(PCD_PATH).context("Failed to load the pcd")?;
@@ -48,15 +54,34 @@ fn main() -> Result<()> {
 
     let converted_2d_grid = project_to_xy_grid(&pcd, VOXEL_SIZE, -0.55, 1.5);
 
-    let save_path = format!("data/output/2d-xy/converted-2d-grid_voxel-{}.png", VOXEL_SIZE);
-    plot_xy_grid_heatmap(&converted_2d_grid, VOXEL_SIZE, &save_path, "XY Grid: count", |cell| cell.z_range() as f64)?;
+    let save_path = format!(
+        "data/output/2d-xy/converted-2d-grid_voxel-{}.png",
+        VOXEL_SIZE
+    );
+    plot_xy_grid_heatmap(
+        &converted_2d_grid,
+        VOXEL_SIZE,
+        &save_path,
+        "XY Grid: count",
+        |cell| cell.z_range() as f64,
+    )?;
     println!("Saved plot to {}", save_path);
 
     // let processed_grid = remove_unnecessary_points(&converted_2d_grid, 0.3, 1.3)?;
-    let processed_grid = remove_unnecessary_points(&converted_2d_grid, MIN_Z, MAX_Z, MIN_Z_RANGE, MAX_Z_RANGE)?;
+    let processed_grid =
+        remove_unnecessary_points(&converted_2d_grid, MIN_Z, MAX_Z, MIN_Z_RANGE, MAX_Z_RANGE)?;
 
-    let save_path = format!("data/output/2d-xy/processed-2d-grid_voxel-{}.png", VOXEL_SIZE);
-    plot_xy_grid_heatmap(&processed_grid, VOXEL_SIZE, &save_path, "XY Grid: count", |cell| cell.z_range() as f64)?;
+    let save_path = format!(
+        "data/output/2d-xy/processed-2d-grid_voxel-{}.png",
+        VOXEL_SIZE
+    );
+    plot_xy_grid_heatmap(
+        &processed_grid,
+        VOXEL_SIZE,
+        &save_path,
+        "XY Grid: count",
+        |cell| cell.z_range() as f64,
+    )?;
     println!("Saved plot to {}", save_path);
 
     let processed_pcd = grid_to_pcd(&processed_grid);
@@ -64,7 +89,6 @@ fn main() -> Result<()> {
     let save_path = format!("data/output/2d-xy/removed_voxel-{}.pcd", VOXEL_SIZE);
     save_xyz_pcd(&processed_pcd, &save_path).context("Failed to save the processed pcd")?;
     println!("Saved processed PCD to {}", save_path);
-
 
     let pts_array2 = point_xyz_to_array2(&processed_pcd);
     let downsampled_pts = voxel_downsample_array2(&pts_array2, VOXEL_SIZE);
@@ -82,22 +106,25 @@ fn main() -> Result<()> {
 
     let removed_pcd = remove_unnecessary_points_by_shape_feats(&pcd_with_shape_feats)?;
 
-    let save_removed_pcd_path =
-        format!("data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxel-{}.pcd", VOXEL_SIZE);
+    let save_removed_pcd_path = format!(
+        "data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxel-{}.pcd",
+        VOXEL_SIZE
+    );
     save_pcd_with_shape_feats(&removed_pcd, &save_removed_pcd_path)?;
     println!(
         "Saved removed unnecessary points pcd to {}",
         save_removed_pcd_path
     );
 
-    let save_original_pcd_path =
-        format!("data/output/2d-xy/convert-2d-pts-by-covariance/original-by-shape-feats_voxel-{}.pcd", VOXEL_SIZE);
+    let save_original_pcd_path = format!(
+        "data/output/2d-xy/convert-2d-pts-by-covariance/original-by-shape-feats_voxel-{}.pcd",
+        VOXEL_SIZE
+    );
     save_pcd_with_shape_feats(&pcd_with_shape_feats, &save_original_pcd_path)?;
     println!(
         "Saved voxelized pcd with shape features to {}",
         save_original_pcd_path
     );
-    
 
     Ok(())
 }
@@ -117,9 +144,7 @@ fn remove_unnecessary_points_by_shape_feats(
     Ok(removed_pts)
 }
 
-fn grid_to_pcd(
-    grid: &HashMap<(i32, i32), CellStats>,
-) -> Vec<PointXYZ> {
+fn grid_to_pcd(grid: &HashMap<(i32, i32), CellStats>) -> Vec<PointXYZ> {
     let mut points: Vec<PointXYZ> = Vec::new();
 
     for (&(ix, iy), cell) in grid.iter() {
@@ -145,7 +170,7 @@ fn remove_unnecessary_points(
     remove_max_z: f32,
 ) -> Result<HashMap<(i32, i32), CellStats>> {
     let mut processed_grid: HashMap<(i32, i32), CellStats> = HashMap::new();
-    
+
     for (&(ix, iy), cell) in converted_2d_grid.iter() {
         // if cell.z_range() < remove_min_z_range || cell.z_range() > remove_max_z_range {
         //     continue;
@@ -167,7 +192,6 @@ fn remove_unnecessary_points(
 
     Ok(processed_grid)
 }
-
 
 // fn remove_unnecessary_points(
 //     pcd_with_shape_feats: &Vec<PointXYZWithShapeFeat>,

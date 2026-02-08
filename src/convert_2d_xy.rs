@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use crate::oprate_pcd::PointXYZ;
 
-
 #[derive(Debug, Clone)]
 pub struct Point {
     pub x: f32,

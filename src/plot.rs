@@ -1,10 +1,13 @@
-use std::collections::HashMap;
 use anyhow::Result;
+use std::collections::HashMap;
 
-use plotters::{chart::ChartBuilder, prelude::{BitMapBackend, IntoDrawingArea, Rectangle}, style::{BLACK, Color, IntoFont, RGBColor, WHITE}};
+use plotters::{
+    chart::ChartBuilder,
+    prelude::{BitMapBackend, IntoDrawingArea, Rectangle},
+    style::{BLACK, Color, IntoFont, RGBColor, WHITE},
+};
 
 use crate::convert_2d_xy::CellStats;
-
 
 pub fn plot_xy_grid_heatmap<F>(
     grid: &HashMap<(i32, i32), CellStats>,

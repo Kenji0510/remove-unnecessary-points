@@ -3,6 +3,12 @@ use std::collections::HashMap;
 use crate::oprate_pcd::PointXYZ;
 
 
+#[derive(Debug, Clone)]
+pub struct Point {
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+}
 
 #[derive(Debug, Default, Clone)]
 pub struct CellStats {
@@ -11,24 +17,30 @@ pub struct CellStats {
     pub z_max: f32,
     pub z_sum: f64,
     pub z_sq_sum: f64,
+    pub pts: Option<Vec<Point>>,
 }
 
 impl CellStats {
-    fn new(z: f32) -> Self {
+    fn new(x: f32, y: f32, z: f32) -> Self {
         Self {
             count: 1,
             z_min: z,
             z_max: z,
             z_sum: z as f64,
             z_sq_sum: (z as f64) * (z as f64),
+            pts: Some(vec![Point { x, y, z }]),
         }
     }
-    fn add(&mut self, z: f32) {
+    // fn add(&mut self, z: f32) {
+    fn add(&mut self, x: f32, y: f32, z: f32) {
         self.count += 1;
         self.z_min = self.z_min.min(z);
         self.z_max = self.z_max.max(z);
         self.z_sum += z as f64;
         self.z_sq_sum += (z as f64) * (z as f64);
+        if let Some(pts) = &mut self.pts {
+            pts.push(Point { x, y, z });
+        }
     }
     pub fn z_mean(&self) -> f32 {
         (self.z_sum / self.count as f64) as f32
@@ -61,8 +73,8 @@ pub fn project_to_xy_grid(
         let iy = (p.y / voxel_xy).floor() as i32;
 
         grid.entry((ix, iy))
-            .and_modify(|cell| cell.add(p.z))
-            .or_insert_with(|| CellStats::new(p.z));
+            .and_modify(|cell| cell.add(p.x, p.y, p.z))
+            .or_insert_with(|| CellStats::new(p.x, p.y, p.z));
     }
 
     grid

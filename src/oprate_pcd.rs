@@ -122,6 +122,24 @@ pub fn save_pcd(points: &[PointXYZNormal], file_path: &str) -> Result<()> {
     Ok(())
 }
 
+pub fn save_xyz_pcd(points: &[PointXYZ], file_path: &str) -> Result<()> {
+    let mut writer = pcd_rs::WriterInit {
+        width: 1,
+        height: points.len() as u64,
+        viewpoint: Default::default(),
+        data_kind: pcd_rs::DataKind::Ascii,
+        schema: None,
+    }
+    .create(file_path)?;
+
+    for point in points {
+        writer.push(point)?;
+    }
+    writer.finish()?;
+
+    Ok(())
+}
+
 pub fn save_pcd_with_covs(points: &[PointXYZCovs], file_path: &str) -> Result<()> {
     let mut writer = pcd_rs::WriterInit {
         width: 1,

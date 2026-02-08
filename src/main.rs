@@ -6,9 +6,8 @@ use nalgebra::{Matrix3, SymmetricEigen, Vector3};
 use ndarray::Array2;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use remove_unnecessary_points::{
-    convert_2d_xy::project_to_xy_grid, oprate_pcd::{
-        PointXYZ, PointXYZCovs, PointXYZWithShapeFeat, load_pcd_xyz, load_pcd_xyzrgb,
-        save_pcd_with_covs, save_pcd_with_shape_feats,
+    convert_2d_xy::{CellStats, project_to_xy_grid}, oprate_pcd::{
+        PointXYZ, PointXYZCovs, PointXYZWithShapeFeat, load_pcd_xyz, load_pcd_xyzrgb, save_pcd, save_pcd_with_covs, save_pcd_with_shape_feats, save_xyz_pcd
     }, plot::plot_xy_grid_heatmap, voxelize::voxel_downsample_array2
 };
 
@@ -35,29 +34,94 @@ fn main() -> Result<()> {
 
     // let pts = point_xyz_to_array2(&pcd);
 
-    let converted_2d_grid = project_to_xy_grid(&pcd, VOXEL_SIZE, 0.0, 1.8);
+    let converted_2d_grid = project_to_xy_grid(&pcd, VOXEL_SIZE, -0.55, 1.5);
 
     let save_path = format!("data/output/2d-xy/converted-2d-grid_voxel-{}.png", VOXEL_SIZE);
     plot_xy_grid_heatmap(&converted_2d_grid, VOXEL_SIZE, &save_path, "XY Grid: count", |cell| cell.z_range() as f64)?;
+    println!("Saved plot to {}", save_path);
+
+    // let processed_grid = remove_unnecessary_points(&converted_2d_grid, 0.3, 1.3)?;
+    let processed_grid = remove_unnecessary_points(&converted_2d_grid, -0.5, 1.5, 0.1, 1.75)?;
+
+    let save_path = format!("data/output/2d-xy/processed-2d-grid_voxel-{}.png", VOXEL_SIZE);
+    plot_xy_grid_heatmap(&processed_grid, VOXEL_SIZE, &save_path, "XY Grid: count", |cell| cell.z_range() as f64)?;
+    println!("Saved plot to {}", save_path);
+
+    let processed_pcd = grid_to_pcd(&processed_grid);
+
+    let save_path = format!("data/output/2d-xy/removed_voxel-{}.pcd", VOXEL_SIZE);
+    save_xyz_pcd(&processed_pcd, &save_path).context("Failed to save the processed pcd")?;
+    println!("Saved processed PCD to {}", save_path);
 
     Ok(())
 }
 
+fn grid_to_pcd(
+    grid: &HashMap<(i32, i32), CellStats>,
+) -> Vec<PointXYZ> {
+    let mut points: Vec<PointXYZ> = Vec::new();
+
+    for (&(ix, iy), cell) in grid.iter() {
+        if let Some(pts) = &cell.pts {
+            for p in pts {
+                points.push(PointXYZ {
+                    x: p.x,
+                    y: p.y,
+                    z: p.z,
+                });
+            }
+        }
+    }
+
+    points
+}
 
 fn remove_unnecessary_points(
-    pcd_with_shape_feats: &Vec<PointXYZWithShapeFeat>,
-) -> Result<Vec<PointXYZWithShapeFeat>> {
-    let removed_pts: Vec<PointXYZWithShapeFeat> = pcd_with_shape_feats
-        .iter()
-        .filter(|p| {
-            !((p.planarity as f64) > PLANARITY_THRESHOLD
-                || (p.scattering as f64) < SCATTERING_THRESHOLD)
-        })
-        .cloned()
-        .collect();
+    converted_2d_grid: &HashMap<(i32, i32), CellStats>,
+    remove_min_z_range: f32,
+    remove_max_z_range: f32,
+    remove_min_z: f32,
+    remove_max_z: f32,
+) -> Result<HashMap<(i32, i32), CellStats>> {
+    let mut processed_grid: HashMap<(i32, i32), CellStats> = HashMap::new();
+    
+    for (&(ix, iy), cell) in converted_2d_grid.iter() {
+        // if cell.z_range() < remove_min_z_range || cell.z_range() > remove_max_z_range {
+        //     continue;
+        // }
+        if let Some(pts) = &cell.pts {
+            for p in pts {
+                if p.z < remove_min_z || p.z > remove_max_z {
+                    continue;
+                }
+                // if cell.z_range() < remove_min_z_range || cell.z_range() > remove_max_z_range {
+                if cell.z_range() > remove_max_z_range {
+                    continue;
+                }
 
-    Ok(removed_pts)
+                processed_grid.insert((ix, iy), cell.clone());
+            }
+        }
+    }
+
+    Ok(processed_grid)
 }
+
+
+// fn remove_unnecessary_points(
+//     pcd_with_shape_feats: &Vec<PointXYZWithShapeFeat>,
+// ) -> Result<Vec<PointXYZWithShapeFeat>> {
+//     let removed_pts: Vec<PointXYZWithShapeFeat> = pcd_with_shape_feats
+//         .iter()
+//         .filter(|p| {
+//             !((p.planarity as f64) > PLANARITY_THRESHOLD
+//                 || (p.scattering as f64) < SCATTERING_THRESHOLD)
+//         })
+//         .cloned()
+//         .collect();
+
+//     Ok(removed_pts)
+// }
 
 fn convert_to_pcd_from_vec(
     pts_vec: &Vec<[f32; 3]>,

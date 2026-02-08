@@ -20,6 +20,10 @@ const PCD_PATH: &str = "data/input/voxelized-H927-hallway-01.pcd";
 const SAVE_ORIGINAL_PCD_PATH: &str = "data/output/voxelized-H927-hallway-01.pcd";
 const SAVE_REMOVED_PCD_PATH: &str =
     "data/output/removed-voxelized-H927-hallway-01.pcd";
+const MIN_Z: f32 = -0.5;
+const MAX_Z: f32 = 1.5;
+const MIN_Z_RANGE: f32 = 0.1;
+const MAX_Z_RANGE: f32 = 1.75;
 
 
 fn main() -> Result<()> {
@@ -30,6 +34,10 @@ fn main() -> Result<()> {
     println!("Input PCD path: {}", PCD_PATH);
     println!("Loaded points: {}", pcd.len());
     println!("Voxel size: {}", VOXEL_SIZE);
+    println!("MIN_Z: {}", MIN_Z);
+    println!("MAX_Z: {}", MAX_Z);
+    println!("MIN_Z_RANGE: {}", MIN_Z_RANGE);
+    println!("MAX_Z_RANGE: {}", MAX_Z_RANGE);
     println!("====================");
 
     // let pts = point_xyz_to_array2(&pcd);
@@ -41,7 +49,7 @@ fn main() -> Result<()> {
     println!("Saved plot to {}", save_path);
 
     // let processed_grid = remove_unnecessary_points(&converted_2d_grid, 0.3, 1.3)?;
-    let processed_grid = remove_unnecessary_points(&converted_2d_grid, -0.5, 1.5, 0.1, 1.75)?;
+    let processed_grid = remove_unnecessary_points(&converted_2d_grid, MIN_Z, MAX_Z, MIN_Z_RANGE, MAX_Z_RANGE)?;
 
     let save_path = format!("data/output/2d-xy/processed-2d-grid_voxel-{}.png", VOXEL_SIZE);
     plot_xy_grid_heatmap(&processed_grid, VOXEL_SIZE, &save_path, "XY Grid: count", |cell| cell.z_range() as f64)?;

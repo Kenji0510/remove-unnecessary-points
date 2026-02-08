@@ -12,14 +12,14 @@ use remove_unnecessary_points::{
 };
 
 const K_NEIGHBORS: usize = 20;
-const VOXEL_SIZE: f32 = 0.2;
+const VOXEL_SIZE: f32 = 0.1;
 const PLANARITY_THRESHOLD: f64 = 0.6;
 const LINEARITY_THRESHOLD: f64 = 0.5;
 const SCATTERING_THRESHOLD: f64 = 0.2;
 const PCD_PATH: &str = "data/input/voxelized-H927-hallway-01.pcd";
 const SAVE_ORIGINAL_PCD_PATH: &str = "data/output/voxelized-H927-hallway-01.pcd";
 const SAVE_REMOVED_PCD_PATH: &str =
-    "data/output/removed-voxelized-H927-hallway-01.pcd";
+    "data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxelized-0.2.pcd";
 const MIN_Z: f32 = -0.5;
 const MAX_Z: f32 = 1.5;
 const MIN_Z_RANGE: f32 = 0.1;
@@ -38,6 +38,10 @@ fn main() -> Result<()> {
     println!("MAX_Z: {}", MAX_Z);
     println!("MIN_Z_RANGE: {}", MIN_Z_RANGE);
     println!("MAX_Z_RANGE: {}", MAX_Z_RANGE);
+    println!("K_NEIGHBORS: {}", K_NEIGHBORS);
+    println!("PLANARITY_THRESHOLD: {}", PLANARITY_THRESHOLD);
+    println!("LINEARITY_THRESHOLD: {}", LINEARITY_THRESHOLD);
+    println!("SCATTERING_THRESHOLD: {}", SCATTERING_THRESHOLD);
     println!("====================");
 
     // let pts = point_xyz_to_array2(&pcd);
@@ -61,7 +65,56 @@ fn main() -> Result<()> {
     save_xyz_pcd(&processed_pcd, &save_path).context("Failed to save the processed pcd")?;
     println!("Saved processed PCD to {}", save_path);
 
+
+    let pts_array2 = point_xyz_to_array2(&processed_pcd);
+    let downsampled_pts = voxel_downsample_array2(&pts_array2, VOXEL_SIZE);
+
+    let pts_vec: Vec<[f32; 3]> = downsampled_pts
+        .outer_iter()
+        .map(|row| [row[0], row[1], row[2]])
+        .collect();
+
+    let pts_kdtree = kiddo::ImmutableKdTree::new_from_slice(&pts_vec);
+
+    let shape_feats = compute_shape_features(&downsampled_pts, &pts_kdtree, K_NEIGHBORS);
+
+    let pcd_with_shape_feats = convert_to_pcd_from_vec(&pts_vec, &shape_feats);
+
+    let removed_pcd = remove_unnecessary_points_by_shape_feats(&pcd_with_shape_feats)?;
+
+    let save_removed_pcd_path =
+        format!("data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxel-{}.pcd", VOXEL_SIZE);
+    save_pcd_with_shape_feats(&removed_pcd, &save_removed_pcd_path)?;
+    println!(
+        "Saved removed unnecessary points pcd to {}",
+        save_removed_pcd_path
+    );
+
+    let save_original_pcd_path =
+        format!("data/output/2d-xy/convert-2d-pts-by-covariance/original-by-shape-feats_voxel-{}.pcd", VOXEL_SIZE);
+    save_pcd_with_shape_feats(&pcd_with_shape_feats, &save_original_pcd_path)?;
+    println!(
+        "Saved voxelized pcd with shape features to {}",
+        save_original_pcd_path
+    );
+    
+
     Ok(())
+}
+
+fn remove_unnecessary_points_by_shape_feats(
+    pcd_with_shape_feats: &Vec<PointXYZWithShapeFeat>,
+) -> Result<Vec<PointXYZWithShapeFeat>> {
+    let removed_pts: Vec<PointXYZWithShapeFeat> = pcd_with_shape_feats
+        .iter()
+        .filter(|p| {
+            !((p.planarity as f64) > PLANARITY_THRESHOLD
+                || (p.scattering as f64) < SCATTERING_THRESHOLD)
+        })
+        .cloned()
+        .collect();
+
+    Ok(removed_pts)
 }
 
 fn grid_to_pcd(

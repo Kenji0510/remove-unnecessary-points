@@ -52,43 +52,45 @@ fn main() -> Result<()> {
 
     // let pts = point_xyz_to_array2(&pcd);
 
+    let start = std::time::Instant::now();
+
     let converted_2d_grid = project_to_xy_grid(&pcd, VOXEL_SIZE, -0.55, 1.5);
 
-    let save_path = format!(
-        "data/output/2d-xy/converted-2d-grid_voxel-{}.png",
-        VOXEL_SIZE
-    );
-    plot_xy_grid_heatmap(
-        &converted_2d_grid,
-        VOXEL_SIZE,
-        &save_path,
-        "XY Grid: count",
-        |cell| cell.z_range() as f64,
-    )?;
-    println!("Saved plot to {}", save_path);
+    // let save_path = format!(
+    //     "data/output/2d-xy/converted-2d-grid_voxel-{}.png",
+    //     VOXEL_SIZE
+    // );
+    // plot_xy_grid_heatmap(
+    //     &converted_2d_grid,
+    //     VOXEL_SIZE,
+    //     &save_path,
+    //     "XY Grid: count",
+    //     |cell| cell.z_range() as f64,
+    // )?;
+    // println!("Saved plot to {}", save_path);
 
     // let processed_grid = remove_unnecessary_points(&converted_2d_grid, 0.3, 1.3)?;
     let processed_grid =
         remove_unnecessary_points(&converted_2d_grid, MIN_Z, MAX_Z, MIN_Z_RANGE, MAX_Z_RANGE)?;
 
-    let save_path = format!(
-        "data/output/2d-xy/processed-2d-grid_voxel-{}.png",
-        VOXEL_SIZE
-    );
-    plot_xy_grid_heatmap(
-        &processed_grid,
-        VOXEL_SIZE,
-        &save_path,
-        "XY Grid: count",
-        |cell| cell.z_range() as f64,
-    )?;
-    println!("Saved plot to {}", save_path);
+    // let save_path = format!(
+    //     "data/output/2d-xy/processed-2d-grid_voxel-{}.png",
+    //     VOXEL_SIZE
+    // );
+    // plot_xy_grid_heatmap(
+    //     &processed_grid,
+    //     VOXEL_SIZE,
+    //     &save_path,
+    //     "XY Grid: count",
+    //     |cell| cell.z_range() as f64,
+    // )?;
+    // println!("Saved plot to {}", save_path);
 
     let processed_pcd = grid_to_pcd(&processed_grid);
 
     let save_path = format!("data/output/2d-xy/removed_voxel-{}.pcd", VOXEL_SIZE);
-    save_xyz_pcd(&processed_pcd, &save_path).context("Failed to save the processed pcd")?;
-    println!("Saved processed PCD to {}", save_path);
+    // save_xyz_pcd(&processed_pcd, &save_path).context("Failed to save the processed pcd")?;
+    // println!("Saved processed PCD to {}", save_path);
 
     let pts_array2 = point_xyz_to_array2(&processed_pcd);
     let downsampled_pts = voxel_downsample_array2(&pts_array2, VOXEL_SIZE);
@@ -105,6 +107,11 @@ fn main() -> Result<()> {
     let pcd_with_shape_feats = convert_to_pcd_from_vec(&pts_vec, &shape_feats);
 
     let removed_pcd = remove_unnecessary_points_by_shape_feats(&pcd_with_shape_feats)?;
+
+    let elapsed = start.elapsed();
+    println!("=== Processing Result ===");
+    println!("After processed points: {}", removed_pcd.len());
+    println!("Processing time: {:.2?}", elapsed);
 
     let save_removed_pcd_path = format!(
         "data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxel-{}.pcd",

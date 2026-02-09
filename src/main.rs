@@ -29,7 +29,7 @@ const SAVE_REMOVED_PCD_PATH: &str =
     "data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxelized-0.2.pcd";
 const MIN_Z: f32 = -0.5;
 const MAX_Z: f32 = 1.5;
-const MIN_Z_RANGE: f32 = 0.1;
+const MIN_Z_RANGE: f32 = 0.7;
 const MAX_Z_RANGE: f32 = 1.75;
 
 fn main() -> Result<()> {

@@ -22,9 +22,9 @@ layout(push_constant) uniform PushConstants {
 layout(set = 0, binding = 0) buffer InputPoints { float in_points[]; };
 layout(set = 0, binding = 1) buffer TableKeys   { uint table_keys[]; };
 layout(set = 0, binding = 2) buffer TableCentroids { float table_centroids[]; };
-layout(set = 0, binding = 3) buffer TableCounts { int table_counts[]; };
+layout(set = 0, binding = 3) buffer TableCounts { uint table_counts[]; };
 layout(set = 0, binding = 4) buffer OutputPoints { float out_points[]; };
-layout(set = 0, binding = 5) buffer OutputCount  { int out_count; };
+layout(set = 0, binding = 5) buffer OutputCount  { uint out_count; };
 
 
 void main() {
@@ -34,7 +34,7 @@ void main() {
     }
 
     uint key = table_keys[idx];
-    int count = table_counts[idx];
+    uint count = table_counts[idx];
 
     if (key != EMPTY_KEY && count > 0) {
         float sx = table_centroids[3 * idx + 0];
@@ -48,7 +48,7 @@ void main() {
             sz *= inv;
         }
 
-        int w_idx = atomicAdd(out_count, 1);
+        uint w_idx = atomicAdd(out_count, 1);
 
         out_points[3 * w_idx + 0] = sx;
         out_points[3 * w_idx + 1] = sy;;

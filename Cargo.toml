@@ -17,4 +17,8 @@ rustc-hash = "2.1.1"
 
 kiddo = "5.0"
 
-vulkano = "0.35.1"
+vulkano = "0.35.0"
+vulkano-shaders = { version = "0.34.0", features = [
+    "shaderc-build-from-source",
+] }
+bytemuck = "1.25.0"

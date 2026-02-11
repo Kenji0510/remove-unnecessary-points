@@ -37,9 +37,9 @@ void main() {
     int count = table_counts[idx];
 
     if (key != EMPTY_KEY && count > 0) {
-        float sx = tabele_centroids[3 * idx + 0];
-        float sy = tabele_centroids[3 * idx + 1];
-        float sz = tabele_centroids[3 * idx + 2];
+        float sx = table_centroids[3 * idx + 0];
+        float sy = table_centroids[3 * idx + 1];
+        float sz = table_centroids[3 * idx + 2];
 
         if (count > 1) {
             float inv = 1.0 / float(count);

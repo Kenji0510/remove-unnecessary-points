@@ -19,12 +19,10 @@ layout(push_constant) uniform PushConstants {
     int _pad;
 } pc;
 
-layout(std430, set = 0, binding = 0) buffer InputPoints { float in_points[]; };
-layout(std430, set = 0, binding = 1) buffer TableKeys   { uint table_keys[]; };
-layout(std430, set = 0, binding = 2) buffer TableCentroids { float table_centroids[]; };
-layout(std430, set = 0, binding = 3) buffer TableCounts { int table_counts[]; };
-layout(std430, set = 0, binding = 4) buffer OutputPoints { float out_points[]; };
-layout(std430, set = 0, binding = 5) buffer OutputCount  { int out_count; };
+layout(set = 0, binding = 1) buffer TableKeys   { uint table_keys[]; };
+layout(set = 0, binding = 2) buffer TableCentroids { float table_centroids[]; };
+layout(set = 0, binding = 3) buffer TableCounts { int table_counts[]; };
+layout(set = 0, binding = 5) buffer OutputCount  { int out_count; };
 
 void main() {
     uint idx = gl_GlobalInvocationID.x;

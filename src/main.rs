@@ -1,6 +1,8 @@
 use core::f64;
 use std::{
-    collections::HashMap, f32::{INFINITY, NEG_INFINITY}, num::{NonZero, NonZeroUsize}
+    collections::HashMap,
+    f32::{INFINITY, NEG_INFINITY},
+    num::{NonZero, NonZeroUsize},
 };
 
 use anyhow::{Context, Result};
@@ -8,10 +10,14 @@ use nalgebra::{Matrix3, SymmetricEigen, Vector3};
 use ndarray::Array2;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use remove_unnecessary_points::{
-    convert_2d_xy::{CellStats, project_to_xy_grid}, gpu_voxel::voxelization, oprate_pcd::{
+    convert_2d_xy::{CellStats, project_to_xy_grid},
+    gpu_voxel::voxelization,
+    oprate_pcd::{
         PointXYZ, PointXYZCovs, PointXYZWithShapeFeat, load_pcd_xyz, load_pcd_xyzrgb, save_pcd,
         save_pcd_with_covs, save_pcd_with_shape_feats, save_xyz_pcd,
-    }, plot::plot_xy_grid_heatmap, voxelize::voxel_downsample_array2
+    },
+    plot::plot_xy_grid_heatmap,
+    voxelize::voxel_downsample_array2,
 };
 
 const K_NEIGHBORS: usize = 20;
@@ -30,8 +36,6 @@ const MAX_Z_RANGE: f32 = 1.75;
 const NUMBERING: usize = 125;
 
 fn main() -> Result<()> {
-    voxelization()?;
-
     let pcd = load_pcd_xyz(PCD_PATH).context("Failed to load the pcd")?;
     // let pcd = load_pcd_xyzrgb(PCD_PATH).context("Failed to load the pcd")?;
 
@@ -48,6 +52,13 @@ fn main() -> Result<()> {
     println!("LINEARITY_THRESHOLD: {}", LINEARITY_THRESHOLD);
     println!("SCATTERING_THRESHOLD: {}", SCATTERING_THRESHOLD);
     println!("====================");
+
+    let pts_vec = pcd_to_vecf32(&pcd);
+    let voxelized_pts = voxelization(&pts_vec, VOXEL_SIZE)?;
+    let voxelized_pcd = vecf32_to_pcd(&voxelized_pts);
+    save_xyz_pcd(&voxelized_pcd, "data/output/kernel_test/voxelization/voxelized-0.05.pcd")
+        .context("Failed to save the voxelized pcd")?;
+
 
     // let pts = point_xyz_to_array2(&pcd);
 
@@ -88,7 +99,10 @@ fn main() -> Result<()> {
 
     let processed_pcd = grid_to_pcd(&processed_grid);
 
-    let save_path = format!("data/output/2d-xy/removed_voxel-{}_NUM-{}.pcd", VOXEL_SIZE, NUMBERING);
+    let save_path = format!(
+        "data/output/2d-xy/removed_voxel-{}_NUM-{}.pcd",
+        VOXEL_SIZE, NUMBERING
+    );
     // save_xyz_pcd(&processed_pcd, &save_path).context("Failed to save the processed pcd")?;
     // println!("Saved processed PCD to {}", save_path);
 
@@ -134,6 +148,24 @@ fn main() -> Result<()> {
     );
 
     Ok(())
+}
+
+fn pcd_to_vecf32(points: &[PointXYZ]) -> Vec<[f32; 3]> {
+    points
+        .iter()
+        .map(|p| [p.x as f32, p.y as f32, p.z as f32])
+        .collect()
+}
+
+fn vecf32_to_pcd(points: &[[f32; 3]]) -> Vec<PointXYZ> {
+    points
+        .iter()
+        .map(|p| PointXYZ {
+            x: p[0],
+            y: p[1],
+            z: p[2],
+        })
+        .collect()
 }
 
 fn remove_unnecessary_points_by_shape_feats(

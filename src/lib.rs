@@ -3,3 +3,4 @@ pub mod oprate_pcd;
 pub mod plot;
 pub mod remove_by_covs;
 pub mod voxelize;
+pub mod gpu_voxel;

@@ -1,7 +1,6 @@
 use core::f64;
 use std::{
-    collections::HashMap,
-    num::{NonZero, NonZeroUsize},
+    collections::HashMap, f32::{INFINITY, NEG_INFINITY}, num::{NonZero, NonZeroUsize}
 };
 
 use anyhow::{Context, Result};
@@ -9,21 +8,18 @@ use nalgebra::{Matrix3, SymmetricEigen, Vector3};
 use ndarray::Array2;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use remove_unnecessary_points::{
-    convert_2d_xy::{CellStats, project_to_xy_grid},
-    oprate_pcd::{
+    convert_2d_xy::{CellStats, project_to_xy_grid}, gpu_voxel::voxelization, oprate_pcd::{
         PointXYZ, PointXYZCovs, PointXYZWithShapeFeat, load_pcd_xyz, load_pcd_xyzrgb, save_pcd,
         save_pcd_with_covs, save_pcd_with_shape_feats, save_xyz_pcd,
-    },
-    plot::plot_xy_grid_heatmap,
-    voxelize::voxel_downsample_array2,
+    }, plot::plot_xy_grid_heatmap, voxelize::voxel_downsample_array2
 };
 
 const K_NEIGHBORS: usize = 20;
-const VOXEL_SIZE: f32 = 0.1;
+const VOXEL_SIZE: f32 = 0.05;
 const PLANARITY_THRESHOLD: f64 = 0.6;
 const LINEARITY_THRESHOLD: f64 = 0.5;
 const SCATTERING_THRESHOLD: f64 = 0.2;
-const PCD_PATH: &str = "data/input/voxelized-H927-hallway-01.pcd";
+const PCD_PATH: &str = "data/input/transformed-combined-frame-125.pcd";
 const SAVE_ORIGINAL_PCD_PATH: &str = "data/output/voxelized-H927-hallway-01.pcd";
 const SAVE_REMOVED_PCD_PATH: &str =
     "data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxelized-0.2.pcd";
@@ -31,8 +27,11 @@ const MIN_Z: f32 = -0.5;
 const MAX_Z: f32 = 1.5;
 const MIN_Z_RANGE: f32 = 0.7;
 const MAX_Z_RANGE: f32 = 1.75;
+const NUMBERING: usize = 125;
 
 fn main() -> Result<()> {
+    voxelization()?;
+
     let pcd = load_pcd_xyz(PCD_PATH).context("Failed to load the pcd")?;
     // let pcd = load_pcd_xyzrgb(PCD_PATH).context("Failed to load the pcd")?;
 
@@ -54,7 +53,8 @@ fn main() -> Result<()> {
 
     let start = std::time::Instant::now();
 
-    let converted_2d_grid = project_to_xy_grid(&pcd, VOXEL_SIZE, -0.55, 1.5);
+    // let converted_2d_grid = project_to_xy_grid(&pcd, VOXEL_SIZE, -0.55, 1.5);
+    let processed_grid = project_to_xy_grid(&pcd, VOXEL_SIZE, NEG_INFINITY, INFINITY);
 
     // let save_path = format!(
     //     "data/output/2d-xy/converted-2d-grid_voxel-{}.png",
@@ -70,25 +70,25 @@ fn main() -> Result<()> {
     // println!("Saved plot to {}", save_path);
 
     // let processed_grid = remove_unnecessary_points(&converted_2d_grid, 0.3, 1.3)?;
-    let processed_grid =
-        remove_unnecessary_points(&converted_2d_grid, MIN_Z, MAX_Z, MIN_Z_RANGE, MAX_Z_RANGE)?;
+    // let processed_grid =
+    //     remove_unnecessary_points(&converted_2d_grid, MIN_Z, MAX_Z, MIN_Z_RANGE, MAX_Z_RANGE)?;
 
     // let save_path = format!(
-    //     "data/output/2d-xy/processed-2d-grid_voxel-{}.png",
-    //     VOXEL_SIZE
+    //     "data/output/2d-xy/processed-2d-grid_voxel-{}_NUM-{}.png",
+    //     VOXEL_SIZE, NUMBERING
     // );
     // plot_xy_grid_heatmap(
     //     &processed_grid,
     //     VOXEL_SIZE,
     //     &save_path,
-    //     "XY Grid: count",
-    //     |cell| cell.z_range() as f64,
+    //     "XY Grid: Count",
+    //     |cell| cell.count as f64,
     // )?;
     // println!("Saved plot to {}", save_path);
 
     let processed_pcd = grid_to_pcd(&processed_grid);
 
-    let save_path = format!("data/output/2d-xy/removed_voxel-{}.pcd", VOXEL_SIZE);
+    let save_path = format!("data/output/2d-xy/removed_voxel-{}_NUM-{}.pcd", VOXEL_SIZE, NUMBERING);
     // save_xyz_pcd(&processed_pcd, &save_path).context("Failed to save the processed pcd")?;
     // println!("Saved processed PCD to {}", save_path);
 
@@ -114,8 +114,8 @@ fn main() -> Result<()> {
     println!("Processing time: {:.2?}", elapsed);
 
     let save_removed_pcd_path = format!(
-        "data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxel-{}.pcd",
-        VOXEL_SIZE
+        "data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxel-{}_NUM-{}.pcd",
+        VOXEL_SIZE, NUMBERING
     );
     save_pcd_with_shape_feats(&removed_pcd, &save_removed_pcd_path)?;
     println!(
@@ -124,8 +124,8 @@ fn main() -> Result<()> {
     );
 
     let save_original_pcd_path = format!(
-        "data/output/2d-xy/convert-2d-pts-by-covariance/original-by-shape-feats_voxel-{}.pcd",
-        VOXEL_SIZE
+        "data/output/2d-xy/convert-2d-pts-by-covariance/original-by-shape-feats_voxel-{}_NUM-{}.pcd",
+        VOXEL_SIZE, NUMBERING
     );
     save_pcd_with_shape_feats(&pcd_with_shape_feats, &save_original_pcd_path)?;
     println!(

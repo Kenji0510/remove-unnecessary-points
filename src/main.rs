@@ -2,7 +2,7 @@ use core::f64;
 use std::{
     collections::HashMap,
     f32::{INFINITY, NEG_INFINITY},
-    num::{NonZero, NonZeroUsize},
+    num::{NonZero, NonZeroUsize}, sync::Arc,
 };
 
 use anyhow::{Context, Result};
@@ -10,14 +10,10 @@ use nalgebra::{Matrix3, SymmetricEigen, Vector3};
 use ndarray::Array2;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use remove_unnecessary_points::{
-    convert_2d_xy::{CellStats, project_to_xy_grid},
-    gpu_voxel::voxelization,
-    oprate_pcd::{
+    convert_2d_xy::{CellStats, project_to_xy_grid}, gpu_voxel_temp::voxelization, gpu_voxel::VoxelGpuContext, init_gpu::VulkanContext, oprate_pcd::{
         PointXYZ, PointXYZCovs, PointXYZWithShapeFeat, load_pcd_xyz, load_pcd_xyzrgb, save_pcd,
         save_pcd_with_covs, save_pcd_with_shape_feats, save_xyz_pcd,
-    },
-    plot::plot_xy_grid_heatmap,
-    voxelize::voxel_downsample_array2,
+    }, plot::plot_xy_grid_heatmap, voxelize::voxel_downsample_array2
 };
 
 const K_NEIGHBORS: usize = 20;
@@ -36,6 +32,9 @@ const MAX_Z_RANGE: f32 = 1.75;
 const NUMBERING: usize = 125;
 
 fn main() -> Result<()> {
+    let vulkan_context = VulkanContext::new().context("Failed to initialize Vulkan context")?;
+    let mut gpu_voxel_ctx = VoxelGpuContext::new(Arc::new(vulkan_context)).context("Failed to create GPU voxel context")?;
+
     let pcd = load_pcd_xyz(PCD_PATH).context("Failed to load the pcd")?;
     // let pcd = load_pcd_xyzrgb(PCD_PATH).context("Failed to load the pcd")?;
 
@@ -54,11 +53,14 @@ fn main() -> Result<()> {
     println!("====================");
 
     let pts_vec = pcd_to_vecf32(&pcd);
-    let voxelized_pts = voxelization(&pts_vec, VOXEL_SIZE)?;
+    let voxelized_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
+    // let voxelized_pts = voxelization(&pts_vec, VOXEL_SIZE)?;
     let voxelized_pcd = vecf32_to_pcd(&voxelized_pts);
-    save_xyz_pcd(&voxelized_pcd, "data/output/kernel_test/voxelization/voxelized-0.05.pcd")
-        .context("Failed to save the voxelized pcd")?;
-
+    save_xyz_pcd(
+        &voxelized_pcd,
+        "data/output/kernel_test/voxelization/voxelized-0.05.pcd",
+    )
+    .context("Failed to save the voxelized pcd")?;
 
     // let pts = point_xyz_to_array2(&pcd);
 

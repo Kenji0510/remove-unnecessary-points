@@ -365,7 +365,7 @@ impl VoxelGpuContext {
                 .unwrap()
                 .bind_pipeline_compute(compute_pipeline_insert.clone())
                 .unwrap()
-                .push_constants(pipeline_layout_init.clone(), 0, consts_data)
+                .push_constants(pipeline_layout_insert.clone(), 0, consts_data)
                 .unwrap()
                 .bind_descriptor_sets(
                     vulkano::pipeline::PipelineBindPoint::Compute,
@@ -380,7 +380,7 @@ impl VoxelGpuContext {
                 .unwrap()
                 .bind_pipeline_compute(compute_pipeline_compact.clone())
                 .unwrap()
-                .push_constants(pipeline_layout_init.clone(), 0, consts_data)
+                .push_constants(pipeline_layout_compact.clone(), 0, consts_data)
                 .unwrap()
                 .bind_descriptor_sets(
                     vulkano::pipeline::PipelineBindPoint::Compute,
@@ -423,7 +423,7 @@ impl VoxelGpuContext {
             (num_pts * 3) as u64,
         )?;
 
-        let staging_counter = Buffer::new_slice::<i32>(
+        let staging_counter = Buffer::new_slice::<u32>(
             memory_allocator.clone(),
             BufferCreateInfo {
                 usage: BufferUsage::TRANSFER_DST,

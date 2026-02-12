@@ -27,12 +27,22 @@ pub struct VulkanContext {
 impl VulkanContext {
     pub fn new() -> Result<Self> {
         let library = VulkanLibrary::new().expect("Failed to load vulkan library");
-        let required_extensions = InstanceExtensions::empty();
+        let mut required_extensions = InstanceExtensions::empty();
+
+        if required_extensions.khr_get_physical_device_properties2 {
+            required_extensions.khr_get_physical_device_properties2 = true;
+        }
+        let mut flags = InstanceCreateFlags::empty();
+        if required_extensions.khr_portability_enumeration {
+            required_extensions.khr_portability_enumeration = true;
+            flags |= InstanceCreateFlags::ENUMERATE_PORTABILITY;
+        } 
+
         let instance = Instance::new(
             library,
             InstanceCreateInfo {
                 enabled_extensions: required_extensions,
-                flags: InstanceCreateFlags::ENUMERATE_PORTABILITY,
+                flags,
                 max_api_version: Some(Version::V1_3),
                 ..Default::default()
             },
@@ -52,7 +62,7 @@ impl VulkanContext {
             .position(|(_, queue_family_properties)| {
                 queue_family_properties
                     .queue_flags
-                    .contains(QueueFlags::COMPUTE)
+                    .contains(QueueFlags::COMPUTE | QueueFlags::TRANSFER)
             })
             .expect("Could not find a compute queue family!")
             as u32;
@@ -79,6 +89,8 @@ impl VulkanContext {
             DeviceCreateInfo {
                 enabled_extensions: DeviceExtensions {
                     ext_shader_atomic_float: true,
+                    #[cfg(target_os = "macos")]
+                    khr_portability_subset: true,
                     ..Default::default()
                 },
                 enabled_features: DeviceFeatures {

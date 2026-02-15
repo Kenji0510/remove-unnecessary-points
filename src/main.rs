@@ -112,7 +112,8 @@ fn main() -> Result<()> {
     // let downsampled_pts = voxel_downsample_array2(&pts_array2, VOXEL_SIZE);
 
     let pts_vec = pcd_to_vecf32(&processed_pcd);
-    let downsampled_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
+    let (downsampled_pts, downsampled_covs) =
+        gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
     println!("GPU voxelization: {} points", downsampled_pts.len());
 
     // let pts_vec: Vec<[f32; 3]> = downsampled_pts
@@ -131,7 +132,8 @@ fn main() -> Result<()> {
     // let pts_kdtree = kiddo::ImmutableKdTree::new_from_slice(&pts_vec);
     // let shape_feats = compute_shape_features(&downsampled_pts, &pts_kdtree, K_NEIGHBORS);
 
-    let shape_feats = compute_shape_features_02(&pts_covs);
+    // let shape_feats = compute_shape_features_02(&pts_covs);
+    let shape_feats = compute_shape_features_02(&downsampled_covs);
 
     let pcd_with_shape_feats = convert_to_pcd_from_vec(&downsampled_pts, &shape_feats);
 

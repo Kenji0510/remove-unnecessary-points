@@ -23,6 +23,7 @@ layout(set = 0, binding = 1) buffer TableKeys   { uint table_keys[]; };
 layout(set = 0, binding = 2) buffer TableCentroids { float table_centroids[]; };
 layout(set = 0, binding = 3) buffer TableCounts { uint table_counts[]; };
 layout(set = 0, binding = 5) buffer OutputCount  { uint out_count; };
+layout(set = 0, binding = 6) buffer TableSecondMoments { float table_m2[]; };
 
 void main() {
     uint idx = gl_GlobalInvocationID.x;
@@ -40,4 +41,11 @@ void main() {
     if (idx == 0) {
         out_count = 0;
     }
+
+    table_m2[6 * idx + 0] = 0.0;
+    table_m2[6 * idx + 1] = 0.0;
+    table_m2[6 * idx + 2] = 0.0;
+    table_m2[6 * idx + 3] = 0.0;
+    table_m2[6 * idx + 4] = 0.0;
+    table_m2[6 * idx + 5] = 0.0;
 }

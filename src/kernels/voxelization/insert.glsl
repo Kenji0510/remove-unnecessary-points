@@ -25,11 +25,13 @@ layout(set = 0, binding = 2) buffer TableCentroids { float table_centroids[]; };
 layout(set = 0, binding = 3) buffer TableCounts { uint table_counts[]; };
 //layout(set = 0, binding = 4) buffer OutputPoints { float out_points[]; };
 //layout(set = 0, binding = 5) buffer OutputCount  { uint out_count; };
+layout(set = 0, binding = 6) buffer TableSecondMoments { float table_m2[]; };
 
 
 shared uint s_keys[SHARED_TABLE_SIZE];
 shared float s_centroids[SHARED_TABLE_SIZE * 3];
 shared int s_counts[SHARED_TABLE_SIZE];
+shared float s_m2[SHARED_TABLE_SIZE * 6];
 
 
 uint compute_voxel_key(float px, float py, float pz, float voxel_size) {
@@ -45,7 +47,13 @@ uint compute_voxel_key(float px, float py, float pz, float voxel_size) {
     return uint(vx) | (uint(vy) << 10) | (uint(vz) << 20);
 }
 
-void add_to_global(uint key, float px, float py, float pz, int count) {
+void add_to_global(
+    uint key, 
+    float px, float py, float pz, 
+    float m_xx, float m_xy, float m_xz,
+    float m_yy, float m_yz, float m_zz, 
+    int count
+) {
     uint h = (key * 2654435761u);
     uint idx = h % uint(pc.table_size);
 
@@ -57,6 +65,13 @@ void add_to_global(uint key, float px, float py, float pz, int count) {
             atomicAdd(table_centroids[3 * idx + 1], py);
             atomicAdd(table_centroids[3 * idx + 2], pz);
             atomicAdd(table_counts[idx], count);
+
+            atomicAdd(table_m2[6 * idx + 0], m_xx);
+            atomicAdd(table_m2[6 * idx + 1], m_xy);
+            atomicAdd(table_m2[6 * idx + 2], m_xz);
+            atomicAdd(table_m2[6 * idx + 3], m_yy);
+            atomicAdd(table_m2[6 * idx + 4], m_yz);
+            atomicAdd(table_m2[6 * idx + 5], m_zz);
             return;
         }
         idx = (idx + 1) % uint(pc.table_size);
@@ -74,6 +89,13 @@ void main() {
         s_centroids[i * 3 + 1] = 0.0;
         s_centroids[i * 3 + 2] = 0.0;
         s_counts[i] = 0;
+
+        s_m2[i * 6 + 0] = 0.0;
+        s_m2[i * 6 + 1] = 0.0;
+        s_m2[i * 6 + 2] = 0.0;
+        s_m2[i * 6 + 3] = 0.0;
+        s_m2[i * 6 + 4] = 0.0;
+        s_m2[i * 6 + 5] = 0.0;
     }
     barrier();
 
@@ -94,6 +116,14 @@ void main() {
                 atomicAdd(s_centroids[s_idx * 3 + 1], py);
                 atomicAdd(s_centroids[s_idx * 3 + 2], pz);
                 atomicAdd(s_counts[s_idx], 1);
+
+                atomicAdd(s_m2[s_idx * 6 + 0], px * px);
+                atomicAdd(s_m2[s_idx * 6 + 1], px * py);
+                atomicAdd(s_m2[s_idx * 6 + 2], px * pz);
+                atomicAdd(s_m2[s_idx * 6 + 3], py * py);
+                atomicAdd(s_m2[s_idx * 6 + 4], py * pz);
+                atomicAdd(s_m2[s_idx * 6 + 5], pz * pz);
+
                 stored = true;
                 break;
             }
@@ -101,7 +131,7 @@ void main() {
         }
 
         if (!stored) {
-            add_to_global(key, px, py, pz, 1);
+            add_to_global(key, px, py, pz, px * px, px * py, px * pz, py * py, py * pz, pz * pz, 1);
         }
     }
     barrier();
@@ -113,7 +143,15 @@ void main() {
             float sy = s_centroids[i * 3 + 1];
             float sz = s_centroids[i * 3 + 2];
             int sc = s_counts[i];
-            add_to_global(key, sx, sy, sz, sc);
+
+            float m_xx = s_m2[i * 6 + 0];
+            float m_xy = s_m2[i * 6 + 1];
+            float m_xz = s_m2[i * 6 + 2];
+            float m_yy = s_m2[i * 6 + 3];
+            float m_yz = s_m2[i * 6 + 4];
+            float m_zz = s_m2[i * 6 + 5];
+            
+            add_to_global(key, sx, sy, sz, m_xx, m_xy, m_xz, m_yy, m_yz, m_zz, sc);
         }
     }
 }

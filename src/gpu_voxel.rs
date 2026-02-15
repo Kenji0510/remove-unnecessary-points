@@ -47,6 +47,8 @@ pub struct VoxelGpuContext {
     d_buf_counts: Option<Subbuffer<[u32]>>,
     d_buf_out_pts: Option<Subbuffer<[f32]>>,
     d_buf_counter: Option<Subbuffer<[u32]>>,
+    d_buf_m2: Option<Subbuffer<[f32]>>,
+    d_buf_out_covs: Option<Subbuffer<[f32]>>,
 }
 
 impl VoxelGpuContext {
@@ -159,6 +161,8 @@ impl VoxelGpuContext {
             d_buf_counts: None,
             d_buf_out_pts: None,
             d_buf_counter: None,
+            d_buf_m2: None,
+            d_buf_out_covs: None,
         })
     }
 
@@ -167,7 +171,7 @@ impl VoxelGpuContext {
         pts: &[[f32; 3]],
         num_pts: usize,
         voxel_size: f32,
-    ) -> Result<Vec<[f32; 3]>> {
+    ) -> Result<(Vec<[f32; 3]>, Vec<[f32; 9]>)> {
         let device = &self.vulkan_context.device;
         let queue = &self.vulkan_context.queue;
         let memory_allocator = &self.vulkan_context.memory_allocator;
@@ -281,6 +285,36 @@ impl VoxelGpuContext {
         .expect("Failed to create buf_counter buffer")
         .into();
 
+        self.d_buf_m2 = Buffer::new_slice::<f32>(
+            memory_allocator.clone(),
+            BufferCreateInfo {
+                usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_SRC,
+                ..Default::default()
+            },
+            AllocationCreateInfo {
+                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
+                ..Default::default()
+            },
+            (num_pts * 6) as u64,
+        )
+        .expect("Failed to create buf_m2 buffer")
+        .into();
+
+        self.d_buf_out_covs = Buffer::new_slice::<f32>(
+            memory_allocator.clone(),
+            BufferCreateInfo {
+                usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_SRC,
+                ..Default::default()
+            },
+            AllocationCreateInfo {
+                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
+                ..Default::default()
+            },
+            (num_pts * 6) as u64,
+        )
+        .expect("Failed to create buf_covs buffer")
+        .into();
+
         let descriptor_set_init = DescriptorSet::new(
             descriptor_set_allocator.clone(),
             self.descriptor_set_layout_init.clone(),
@@ -291,6 +325,7 @@ impl VoxelGpuContext {
                 WriteDescriptorSet::buffer(3, self.d_buf_counts.as_ref().unwrap().clone()),
                 // WriteDescriptorSet::buffer(4, buf_out_pts.clone()),
                 WriteDescriptorSet::buffer(5, self.d_buf_counter.as_ref().unwrap().clone()),
+                WriteDescriptorSet::buffer(6, self.d_buf_m2.as_ref().unwrap().clone()),
             ],
             [],
         )
@@ -306,6 +341,7 @@ impl VoxelGpuContext {
                 WriteDescriptorSet::buffer(3, self.d_buf_counts.as_ref().unwrap().clone()),
                 // WriteDescriptorSet::buffer(4, buf_out_pts.clone()),
                 // WriteDescriptorSet::buffer(5, buf_counter.clone()),
+                WriteDescriptorSet::buffer(6, self.d_buf_m2.as_ref().unwrap().clone()),
             ],
             [],
         )
@@ -321,6 +357,8 @@ impl VoxelGpuContext {
                 WriteDescriptorSet::buffer(3, self.d_buf_counts.as_ref().unwrap().clone()),
                 WriteDescriptorSet::buffer(4, self.d_buf_out_pts.as_ref().unwrap().clone()),
                 WriteDescriptorSet::buffer(5, self.d_buf_counter.as_ref().unwrap().clone()),
+                WriteDescriptorSet::buffer(6, self.d_buf_m2.as_ref().unwrap().clone()),
+                WriteDescriptorSet::buffer(7, self.d_buf_out_covs.as_ref().unwrap().clone()),
             ],
             [],
         )
@@ -437,11 +475,26 @@ impl VoxelGpuContext {
             1,
         )?;
 
+        let staging_out_covs = Buffer::new_slice::<f32>(
+            memory_allocator.clone(),
+            BufferCreateInfo {
+                usage: BufferUsage::TRANSFER_DST,
+                ..Default::default()
+            },
+            AllocationCreateInfo {
+                memory_type_filter: MemoryTypeFilter::PREFER_HOST
+                    | MemoryTypeFilter::HOST_RANDOM_ACCESS,
+                ..Default::default()
+            },
+            (num_pts * 6) as u64,
+        )?;
+
         let mut copy_builder = AutoCommandBufferBuilder::primary(
             command_buffer_allocator.clone(),
             queue.queue_family_index().clone(),
             CommandBufferUsage::OneTimeSubmit,
         )?;
+        
 
         copy_builder.copy_buffer(CopyBufferInfo::buffers(
             self.d_buf_out_pts.as_ref().unwrap().clone(),
@@ -450,6 +503,11 @@ impl VoxelGpuContext {
         copy_builder.copy_buffer(CopyBufferInfo::buffers(
             self.d_buf_counter.as_ref().unwrap().clone(),
             staging_counter.clone(),
+        ))?;
+
+        copy_builder.copy_buffer(CopyBufferInfo::buffers(
+            self.d_buf_out_covs.as_ref().unwrap().clone(),
+            staging_out_covs.clone(),
         ))?;
 
         let copy_command_buffer = copy_builder.build()?;
@@ -471,6 +529,26 @@ impl VoxelGpuContext {
             .map(|chunk| chunk.try_into().unwrap())
             .collect();
 
-        Ok(output_points)
+        let out_cov_content = staging_out_covs.read()?;
+        let output_covariances: Vec<[f32; 9]> = out_cov_content
+            .chunks_exact(6)
+            .take(num_output_points)
+            .map(|c| {
+                let xx = c[0];
+                let xy = c[1];
+                let xz = c[2];
+                let yy = c[3];
+                let yz = c[4];
+                let zz = c[5];
+
+                [
+                    xx, xy, xz,
+                    xy, yy, yz,
+                    xz, yz, zz,
+                ]
+            })
+            .collect();
+
+        Ok((output_points, output_covariances))
     }
 }

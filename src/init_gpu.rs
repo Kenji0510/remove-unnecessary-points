@@ -13,6 +13,7 @@ use vulkano::{
     memory::allocator::{FreeListAllocator, GenericMemoryAllocator, StandardMemoryAllocator},
 };
 
+#[derive(Clone)]
 pub struct VulkanContext {
     // _library: Arc<VulkanLibrary>,
     // instance: Arc<Instance>,
@@ -36,7 +37,7 @@ impl VulkanContext {
         if required_extensions.khr_portability_enumeration {
             required_extensions.khr_portability_enumeration = true;
             flags |= InstanceCreateFlags::ENUMERATE_PORTABILITY;
-        } 
+        }
 
         let instance = Instance::new(
             library,

@@ -28,7 +28,7 @@ struct PushConsts {
 }
 
 pub struct VoxelGpuContext {
-    vulkan_context: Arc<VulkanContext>,
+    vulkan_context: VulkanContext,
 
     compute_pipeline_init: Arc<ComputePipeline>,
     compute_pipeline_insert: Arc<ComputePipeline>,
@@ -50,7 +50,7 @@ pub struct VoxelGpuContext {
 }
 
 impl VoxelGpuContext {
-    pub fn new(vulkan_context: Arc<VulkanContext>) -> Result<Self> {
+    pub fn new(vulkan_context: VulkanContext) -> Result<Self> {
         mod cs_init {
             vulkano_shaders::shader! {
                 ty: "compute",

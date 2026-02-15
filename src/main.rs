@@ -2,7 +2,8 @@ use core::f64;
 use std::{
     collections::HashMap,
     f32::{INFINITY, NEG_INFINITY},
-    num::{NonZero, NonZeroUsize}, sync::Arc,
+    num::{NonZero, NonZeroUsize},
+    sync::Arc,
 };
 
 use anyhow::{Context, Result};
@@ -10,7 +11,7 @@ use nalgebra::{Matrix3, SymmetricEigen, Vector3};
 use ndarray::Array2;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use remove_unnecessary_points::{
-    convert_2d_xy::{CellStats, project_to_xy_grid}, gpu_voxel_temp::voxelization, gpu_voxel::VoxelGpuContext, init_gpu::VulkanContext, oprate_pcd::{
+    convert_2d_xy::{CellStats, project_to_xy_grid}, gpu_covariance::CovarianceGpuContext, gpu_voxel::VoxelGpuContext, gpu_voxel_temp::voxelization, init_gpu::VulkanContext, oprate_pcd::{
         PointXYZ, PointXYZCovs, PointXYZWithShapeFeat, load_pcd_xyz, load_pcd_xyzrgb, save_pcd,
         save_pcd_with_covs, save_pcd_with_shape_feats, save_xyz_pcd,
     }, plot::plot_xy_grid_heatmap, voxelize::voxel_downsample_array2
@@ -33,7 +34,10 @@ const NUMBERING: usize = 125;
 
 fn main() -> Result<()> {
     let vulkan_context = VulkanContext::new().context("Failed to initialize Vulkan context")?;
-    let mut gpu_voxel_ctx = VoxelGpuContext::new(Arc::new(vulkan_context)).context("Failed to create GPU voxel context")?;
+    let mut gpu_voxel_ctx = VoxelGpuContext::new(vulkan_context.clone())
+        .context("Failed to create GPU voxel context")?;
+    let mut gpu_covariance_ctx = CovarianceGpuContext::new(vulkan_context.clone())
+        .context("Failed to create GPU covariance context")?;
 
     let pcd = load_pcd_xyz(PCD_PATH).context("Failed to load the pcd")?;
     // let pcd = load_pcd_xyzrgb(PCD_PATH).context("Failed to load the pcd")?;
@@ -51,18 +55,6 @@ fn main() -> Result<()> {
     println!("LINEARITY_THRESHOLD: {}", LINEARITY_THRESHOLD);
     println!("SCATTERING_THRESHOLD: {}", SCATTERING_THRESHOLD);
     println!("====================");
-
-    let pts_vec = pcd_to_vecf32(&pcd);
-    let voxelized_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
-    // let voxelized_pts = voxelization(&pts_vec, VOXEL_SIZE)?;
-    let voxelized_pcd = vecf32_to_pcd(&voxelized_pts);
-    save_xyz_pcd(
-        &voxelized_pcd,
-        "data/output/kernel_test/voxelization/voxelized-0.05.pcd",
-    )
-    .context("Failed to save the voxelized pcd")?;
-
-    // let pts = point_xyz_to_array2(&pcd);
 
     let start = std::time::Instant::now();
 
@@ -101,26 +93,39 @@ fn main() -> Result<()> {
 
     let processed_pcd = grid_to_pcd(&processed_grid);
 
-    let save_path = format!(
-        "data/output/2d-xy/removed_voxel-{}_NUM-{}.pcd",
-        VOXEL_SIZE, NUMBERING
-    );
+    // let save_path = format!(
+    //     "data/output/2d-xy/removed_voxel-{}_NUM-{}.pcd",
+    //     VOXEL_SIZE, NUMBERING
+    // );
     // save_xyz_pcd(&processed_pcd, &save_path).context("Failed to save the processed pcd")?;
     // println!("Saved processed PCD to {}", save_path);
 
-    let pts_array2 = point_xyz_to_array2(&processed_pcd);
-    let downsampled_pts = voxel_downsample_array2(&pts_array2, VOXEL_SIZE);
+    // Downsample the points
+    // let pts_array2 = point_xyz_to_array2(&processed_pcd);
+    // let downsampled_pts = voxel_downsample_array2(&pts_array2, VOXEL_SIZE);
 
-    let pts_vec: Vec<[f32; 3]> = downsampled_pts
-        .outer_iter()
-        .map(|row| [row[0], row[1], row[2]])
-        .collect();
+    let pts_vec = pcd_to_vecf32(&processed_pcd);
+    let downsampled_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
+    println!("GPU voxelization: {} points", downsampled_pts.len());
 
-    let pts_kdtree = kiddo::ImmutableKdTree::new_from_slice(&pts_vec);
+    // let pts_vec: Vec<[f32; 3]> = downsampled_pts
+    //     .outer_iter()
+    //     .map(|row| [row[0], row[1], row[2]])
+    //     .collect();
+    // println!("CPU downsampling: {} points", pts_vec.len());
+    
+    // Convert to flat f32 vec for GPU
+    // let pts_flat: Vec<f32> = pts_vec.iter().flat_map(|p| p.iter().copied()).collect();
+    // let num_points = pts_vec.len();
 
-    let shape_feats = compute_shape_features(&downsampled_pts, &pts_kdtree, K_NEIGHBORS);
+    // Compute covariances on GPU using the same downsampled points
+    let pts_covs = gpu_covariance_ctx.compute_covariances(&downsampled_pts, downsampled_pts.len())?;
+    // let pts_kdtree = kiddo::ImmutableKdTree::new_from_slice(&pts_vec);
+    // let shape_feats = compute_shape_features(&downsampled_pts, &pts_kdtree, K_NEIGHBORS);
 
-    let pcd_with_shape_feats = convert_to_pcd_from_vec(&pts_vec, &shape_feats);
+    let shape_feats = compute_shape_features_02(&pts_covs);
+
+    let pcd_with_shape_feats = convert_to_pcd_from_vec(&downsampled_pts, &shape_feats);
 
     let removed_pcd = remove_unnecessary_points_by_shape_feats(&pcd_with_shape_feats)?;
 
@@ -385,4 +390,44 @@ pub fn compute_shape_features(
             }
         })
         .collect()
+}
+
+pub fn compute_shape_features_02(
+    covs: &Vec<[f32; 9]>,
+) -> Vec<ShapeFeat> {
+    let num_points = covs.len();
+    let mut shape_feats: Vec<ShapeFeat> = Vec::with_capacity(num_points);
+
+    for cov in covs {
+        let cov_matrix = Matrix3::new(
+            cov[0] as f64, cov[1] as f64, cov[2] as f64,
+            cov[3] as f64, cov[4] as f64, cov[5] as f64,
+            cov[6] as f64, cov[7] as f64, cov[8] as f64,
+        );
+
+        let eigen = nalgebra::linalg::SymmetricEigen::new(cov_matrix);
+        let (l1, l2, l3) = sort_desc3(
+            eigen.eigenvalues[0],
+            eigen.eigenvalues[1],
+            eigen.eigenvalues[2],
+        );
+
+        let eps = 1e-12;
+        let denom = (l1.abs()).max(eps);
+
+        let linearity = ((l1 - l2) / denom).clamp(0.0, 1.0);
+        let planarity = ((l2 - l3) / denom).clamp(0.0, 1.0);
+        let scattering = (l3 / denom).clamp(0.0, 1.0);
+
+        shape_feats.push(ShapeFeat {
+            linearity,
+            planarity,
+            scattering,
+            l1,
+            l2,
+            l3,
+        });
+    }
+
+    shape_feats
 }

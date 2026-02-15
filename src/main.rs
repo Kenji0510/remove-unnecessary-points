@@ -11,10 +11,17 @@ use nalgebra::{Matrix3, SymmetricEigen, Vector3};
 use ndarray::Array2;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use remove_unnecessary_points::{
-    convert_2d_xy::{CellStats, project_to_xy_grid}, gpu_covariance::CovarianceGpuContext, gpu_voxel::VoxelGpuContext, gpu_voxel_temp::voxelization, init_gpu::VulkanContext, oprate_pcd::{
+    convert_2d_xy::{CellStats, project_to_xy_grid},
+    gpu_covariance::CovarianceGpuContext,
+    gpu_voxel::VoxelGpuContext,
+    gpu_voxel_temp::voxelization,
+    init_gpu::VulkanContext,
+    oprate_pcd::{
         PointXYZ, PointXYZCovs, PointXYZWithShapeFeat, load_pcd_xyz, load_pcd_xyzrgb, save_pcd,
         save_pcd_with_covs, save_pcd_with_shape_feats, save_xyz_pcd,
-    }, plot::plot_xy_grid_heatmap, voxelize::voxel_downsample_array2
+    },
+    plot::plot_xy_grid_heatmap,
+    voxelize::voxel_downsample_array2,
 };
 
 const K_NEIGHBORS: usize = 20;
@@ -113,13 +120,14 @@ fn main() -> Result<()> {
     //     .map(|row| [row[0], row[1], row[2]])
     //     .collect();
     // println!("CPU downsampling: {} points", pts_vec.len());
-    
+
     // Convert to flat f32 vec for GPU
     // let pts_flat: Vec<f32> = pts_vec.iter().flat_map(|p| p.iter().copied()).collect();
     // let num_points = pts_vec.len();
 
     // Compute covariances on GPU using the same downsampled points
-    let pts_covs = gpu_covariance_ctx.compute_covariances(&downsampled_pts, downsampled_pts.len())?;
+    let pts_covs =
+        gpu_covariance_ctx.compute_covariances(&downsampled_pts, downsampled_pts.len())?;
     // let pts_kdtree = kiddo::ImmutableKdTree::new_from_slice(&pts_vec);
     // let shape_feats = compute_shape_features(&downsampled_pts, &pts_kdtree, K_NEIGHBORS);
 
@@ -392,17 +400,21 @@ pub fn compute_shape_features(
         .collect()
 }
 
-pub fn compute_shape_features_02(
-    covs: &Vec<[f32; 9]>,
-) -> Vec<ShapeFeat> {
+pub fn compute_shape_features_02(covs: &Vec<[f32; 9]>) -> Vec<ShapeFeat> {
     let num_points = covs.len();
     let mut shape_feats: Vec<ShapeFeat> = Vec::with_capacity(num_points);
 
     for cov in covs {
         let cov_matrix = Matrix3::new(
-            cov[0] as f64, cov[1] as f64, cov[2] as f64,
-            cov[3] as f64, cov[4] as f64, cov[5] as f64,
-            cov[6] as f64, cov[7] as f64, cov[8] as f64,
+            cov[0] as f64,
+            cov[1] as f64,
+            cov[2] as f64,
+            cov[3] as f64,
+            cov[4] as f64,
+            cov[5] as f64,
+            cov[6] as f64,
+            cov[7] as f64,
+            cov[8] as f64,
         );
 
         let eigen = nalgebra::linalg::SymmetricEigen::new(cov_matrix);

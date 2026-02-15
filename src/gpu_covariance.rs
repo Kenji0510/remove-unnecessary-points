@@ -247,7 +247,9 @@ impl CovarianceGpuContext {
             .chunks_exact(9)
             .take(num_pts)
             .map(|chunk| {
-                chunk.try_into().expect("Chunk should have exactly 9 elements")
+                chunk
+                    .try_into()
+                    .expect("Chunk should have exactly 9 elements")
             })
             .collect();
 

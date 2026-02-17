@@ -28,9 +28,24 @@ layout(set = 0, binding = 3) buffer TableCounts { uint table_counts[]; };
 
 
 shared uint s_keys[SHARED_TABLE_SIZE];
-shared float s_centroids[SHARED_TABLE_SIZE * 3];
+// shared float s_centroids[SHARED_TABLE_SIZE * 3];
+shared uint s_centroids[SHARED_TABLE_SIZE * 3];
 shared int s_counts[SHARED_TABLE_SIZE];
 
+
+void atomicAddSharedFloat(uint index, float val) {
+    uint assumed;
+    uint old_val = s_centroids[index];
+    do {
+        assumed = old_val;
+        // 現在のuint値をfloatに戻して加算し、再度uintにキャスト
+        float new_float = uintBitsToFloat(assumed) + val;
+        uint new_val = floatBitsToUint(new_float);
+        
+        // assumedと一致していればnew_valに置き換え、そうでなければold_valを更新してリトライ
+        old_val = atomicCompSwap(s_centroids[index], assumed, new_val);
+    } while (assumed != old_val);
+}
 
 uint compute_voxel_key(float px, float py, float pz, float voxel_size) {
     float inv_voxel = 1.0 / voxel_size;
@@ -70,9 +85,12 @@ void main() {
 
     for (uint i = l_idx; i < SHARED_TABLE_SIZE; i += l_size) {
         s_keys[i] = EMPTY_KEY;
-        s_centroids[i * 3 + 0] = 0.0;
-        s_centroids[i * 3 + 1] = 0.0;
-        s_centroids[i * 3 + 2] = 0.0;
+        // s_centroids[i * 3 + 0] = 0.0;
+        // s_centroids[i * 3 + 1] = 0.0;
+        // s_centroids[i * 3 + 2] = 0.0;
+        s_centroids[i * 3 + 0] = 0u;
+        s_centroids[i * 3 + 1] = 0u;
+        s_centroids[i * 3 + 2] = 0u;
         s_counts[i] = 0;
     }
     barrier();
@@ -90,9 +108,12 @@ void main() {
             uint old = atomicCompSwap(s_keys[s_idx], EMPTY_KEY, key);
             
             if (old == EMPTY_KEY || old == key) {
-                atomicAdd(s_centroids[s_idx * 3 + 0], px);
-                atomicAdd(s_centroids[s_idx * 3 + 1], py);
-                atomicAdd(s_centroids[s_idx * 3 + 2], pz);
+                // atomicAdd(s_centroids[s_idx * 3 + 0], px);
+                // atomicAdd(s_centroids[s_idx * 3 + 1], py);
+                // atomicAdd(s_centroids[s_idx * 3 + 2], pz);
+                atomicAddSharedFloat(s_idx * 3 + 0, px);
+                atomicAddSharedFloat(s_idx * 3 + 1, py);
+                atomicAddSharedFloat(s_idx * 3 + 2, pz);
                 atomicAdd(s_counts[s_idx], 1);
                 stored = true;
                 break;
@@ -109,9 +130,12 @@ void main() {
     for (uint i = l_idx; i < SHARED_TABLE_SIZE; i += l_size) {
         uint key = s_keys[i];
         if (key != EMPTY_KEY) {
-            float sx = s_centroids[i * 3 + 0];
-            float sy = s_centroids[i * 3 + 1];
-            float sz = s_centroids[i * 3 + 2];
+            // float sx = s_centroids[i * 3 + 0];
+            // float sy = s_centroids[i * 3 + 1];
+            // float sz = s_centroids[i * 3 + 2];
+            float sx = uintBitsToFloat(s_centroids[i * 3 + 0]);
+            float sy = uintBitsToFloat(s_centroids[i * 3 + 1]);
+            float sz = uintBitsToFloat(s_centroids[i * 3 + 2]);
             int sc = s_counts[i];
             add_to_global(key, sx, sy, sz, sc);
         }

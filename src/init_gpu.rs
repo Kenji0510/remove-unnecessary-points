@@ -7,10 +7,10 @@ use vulkano::{
     descriptor_set::allocator::StandardDescriptorSetAllocator,
     device::{
         Device, DeviceCreateInfo, DeviceExtensions, DeviceFeatures, Queue, QueueCreateInfo,
-        QueueFlags, physical::PhysicalDevice,
+        QueueFlags,
     },
     instance::{Instance, InstanceCreateFlags, InstanceCreateInfo, InstanceExtensions},
-    memory::allocator::{FreeListAllocator, GenericMemoryAllocator, StandardMemoryAllocator},
+    memory::allocator::StandardMemoryAllocator,
 };
 
 #[derive(Clone)]
@@ -50,11 +50,51 @@ impl VulkanContext {
         )
         .expect("Failed to create instance");
 
-        let physical_device = instance
+        // Enumerate all available devices and print their information
+        let available_devices: Vec<_> = instance
             .enumerate_physical_devices()
             .expect("Could not enumerate devices!")
-            .next()
-            .expect("No devices available");
+            .collect();
+
+        if available_devices.is_empty() {
+            anyhow::bail!("No Vulkan devices available");
+        }
+
+        println!("\n=== Available Vulkan Devices ===");
+        for (i, device) in available_devices.iter().enumerate() {
+            println!(
+                "Device {}: {} ({:?})",
+                i,
+                device.properties().device_name,
+                device.properties().device_type
+            );
+        }
+        println!();
+
+        // Select the best GPU device - prioritize discrete GPU
+        let physical_device = available_devices
+            .iter()
+            .find(|d| {
+                d.properties().device_type == vulkano::device::physical::PhysicalDeviceType::DiscreteGpu
+            })
+            .or_else(|| {
+                // Fall back to integrated GPU if no discrete GPU found
+                available_devices.iter().find(|d| {
+                    d.properties().device_type == vulkano::device::physical::PhysicalDeviceType::IntegratedGpu
+                })
+            })
+            .or_else(|| {
+                // Fall back to any other GPU type
+                available_devices.iter().find(|d| {
+                    d.properties().device_type == vulkano::device::physical::PhysicalDeviceType::VirtualGpu
+                })
+            })
+            .unwrap_or(&available_devices[0])
+            .clone();
+
+        println!("Selected device: {} ({:?})\n", 
+            physical_device.properties().device_name,
+            physical_device.properties().device_type);
 
         let queue_family_index = physical_device
             .queue_family_properties()

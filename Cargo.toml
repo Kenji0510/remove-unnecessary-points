@@ -9,7 +9,7 @@ pcd-rs = { version = "0.11", features = ["derive"] }
 plotters = "0.3"
 
 ndarray = { version = "0.15", features = ["blas", "rayon"] }
-ndarray-linalg = { version = "0.16", features = ["openblas-system"] }
+ndarray-linalg = { version = "0.15", features = ["openblas-system"] }
 nalgebra = "0.34.1"
 
 rayon = "1.11.0"

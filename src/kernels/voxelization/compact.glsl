@@ -3,13 +3,8 @@
 layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 
 const uint EMPTY_KEY = 0xFFFFFFFF;
-const uint SHARED_TABLE_SIZE = 1536;
-const uint SHARED_PROBE = 32;
-const uint GLOBAL_PROBE = 1000;
-
-const int GRID_OFFSET_X = 512;
-const int GRID_OFFSET_Y = 512;
-const int GRID_OFFSET_Z = 512;
+const float FIXED_SCALE = 10000.0;  // Match the scale used in insert shader
+const float INV_FIXED_SCALE = 1.0 / FIXED_SCALE;
 
 layout(push_constant) uniform PushConstants {
     int num_points;
@@ -26,19 +21,48 @@ layout(set = 0, binding = 4) buffer OutputPoints { float out_points[]; };
 layout(set = 0, binding = 5) buffer OutputCount  { uint out_count; };
 
 
+shared uint s_group_valid_count;
+shared uint s_group_base_idx;
+
 void main() {
     uint idx = gl_GlobalInvocationID.x;
-    if (idx >= pc.table_size) {
-        return;
+    uint l_idx = gl_LocalInvocationID.x;
+
+    if (l_idx == 0) {
+        s_group_valid_count = 0;
     }
+    barrier();
 
-    uint key = table_keys[idx];
-    uint count = table_counts[idx];
+    bool is_valid = false;
+    uint count = 0;
+    uint local_offset = 0;
 
-    if (key != EMPTY_KEY && count > 0) {
-        float sx = uintBitsToFloat(table_centroids[3 * idx + 0]);
-        float sy = uintBitsToFloat(table_centroids[3 * idx + 1]);
-        float sz = uintBitsToFloat(table_centroids[3 * idx + 2]);
+    if (idx < pc.table_size) {
+        uint key = table_keys[idx];
+        count = table_counts[idx];
+
+        if (key != EMPTY_KEY && count > 0) {
+            is_valid = true;
+            local_offset = atomicAdd(s_group_valid_count, 1);
+        }
+    }
+    barrier();
+
+    if (l_idx == 0) {
+        if (s_group_valid_count > 0) {
+            s_group_base_idx = atomicAdd(out_count, s_group_valid_count);
+        }
+    }
+    barrier();
+
+    if (is_valid) {
+        int raw_x = int(table_centroids[idx * 3 + 0]);
+        int raw_y = int(table_centroids[idx * 3 + 1]);
+        int raw_z = int(table_centroids[idx * 3 + 2]);
+
+        float sx = float(raw_x) * INV_FIXED_SCALE;
+        float sy = float(raw_y) * INV_FIXED_SCALE;
+        float sz = float(raw_z) * INV_FIXED_SCALE;
 
         if (count > 1) {
             float inv = 1.0 / float(count);
@@ -47,10 +71,11 @@ void main() {
             sz *= inv;
         }
 
-        uint w_idx = atomicAdd(out_count, 1);
+        uint w_idx = s_group_base_idx + local_offset;
 
-        out_points[3 * w_idx + 0] = sx;
-        out_points[3 * w_idx + 1] = sy;;
-        out_points[3 * w_idx + 2] = sz;
+        out_points[w_idx * 3 + 0] = sx;
+        out_points[w_idx * 3 + 1] = sy;
+        out_points[w_idx * 3 + 2] = sz;
     }
 }
+    

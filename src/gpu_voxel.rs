@@ -43,7 +43,7 @@ pub struct VoxelGpuContext {
     staging_h_buf_input_pts: Option<Subbuffer<[f32]>>,
     d_buf_input_pts: Option<Subbuffer<[f32]>>,
     d_buf_keys: Option<Subbuffer<[u32]>>,
-    d_buf_centroids: Option<Subbuffer<[f32]>>,
+    d_buf_centroids: Option<Subbuffer<[u32]>>,
     d_buf_counts: Option<Subbuffer<[u32]>>,
     d_buf_out_pts: Option<Subbuffer<[f32]>>,
     d_buf_counter: Option<Subbuffer<[u32]>>,
@@ -221,7 +221,7 @@ impl VoxelGpuContext {
         .expect("Failed to create buf_keys buffer")
         .into();
 
-        self.d_buf_centroids = Buffer::new_slice::<f32>(
+        self.d_buf_centroids = Buffer::new_slice::<u32>(
             memory_allocator.clone(),
             BufferCreateInfo {
                 usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_DST,

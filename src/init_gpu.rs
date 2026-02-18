@@ -75,26 +75,31 @@ impl VulkanContext {
         let physical_device = available_devices
             .iter()
             .find(|d| {
-                d.properties().device_type == vulkano::device::physical::PhysicalDeviceType::DiscreteGpu
+                d.properties().device_type
+                    == vulkano::device::physical::PhysicalDeviceType::DiscreteGpu
             })
             .or_else(|| {
                 // Fall back to integrated GPU if no discrete GPU found
                 available_devices.iter().find(|d| {
-                    d.properties().device_type == vulkano::device::physical::PhysicalDeviceType::IntegratedGpu
+                    d.properties().device_type
+                        == vulkano::device::physical::PhysicalDeviceType::IntegratedGpu
                 })
             })
             .or_else(|| {
                 // Fall back to any other GPU type
                 available_devices.iter().find(|d| {
-                    d.properties().device_type == vulkano::device::physical::PhysicalDeviceType::VirtualGpu
+                    d.properties().device_type
+                        == vulkano::device::physical::PhysicalDeviceType::VirtualGpu
                 })
             })
             .unwrap_or(&available_devices[0])
             .clone();
 
-        println!("Selected device: {} ({:?})\n", 
+        println!(
+            "Selected device: {} ({:?})\n",
             physical_device.properties().device_name,
-            physical_device.properties().device_type);
+            physical_device.properties().device_type
+        );
 
         let queue_family_index = physical_device
             .queue_family_properties()
@@ -120,23 +125,22 @@ impl VulkanContext {
             anyhow::bail!("Device does not support float32 atomic add");
         }
 
-        if !features.shader_shared_float32_atomic_add {
-            eprintln!("Error: Device does not support shader_shared_float32_atomic_add!");
-            anyhow::bail!("Missing required feature for shared memory atomics");
-        }
+        // if !features.shader_shared_float32_atomic_add {
+        //     eprintln!("Error: Device does not support shader_shared_float32_atomic_add!");
+        //     anyhow::bail!("Missing required feature for shared memory atomics");
+        // }
 
         let (device, mut queues) = Device::new(
             physical_device.clone(),
             DeviceCreateInfo {
                 enabled_extensions: DeviceExtensions {
                     ext_shader_atomic_float: true,
-                    #[cfg(target_os = "macos")]
-                    khr_portability_subset: true,
+                    khr_portability_subset: supported_extensions.khr_portability_subset,
                     ..Default::default()
                 },
                 enabled_features: DeviceFeatures {
                     shader_buffer_float32_atomic_add: true,
-                    shader_shared_float32_atomic_add: true,
+                    // shader_shared_float32_atomic_add: true,
                     ..Default::default()
                 },
                 queue_create_infos: vec![QueueCreateInfo {

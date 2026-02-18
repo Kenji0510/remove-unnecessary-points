@@ -156,15 +156,31 @@ impl CovarianceGpuContext {
         let group_count_x = (num_pts as u32 + LOCAL_SIZE - 1) / LOCAL_SIZE;
         let work_group_count = [group_count_x, 1, 1];
 
-        let mut create_info = QueryPoolCreateInfo::query_type(QueryType::Timestamp);
-        create_info.query_count = 6;
+        // Check if timestamps are supported
+        let queue_family_props = device
+            .physical_device()
+            .queue_family_properties()
+            .get(queue.queue_family_index() as usize)
+            .unwrap();
+        let timestamps_supported = queue_family_props
+            .timestamp_valid_bits
+            .map_or(false, |bits| bits > 0);
 
-        let query_pool = QueryPool::new(device.clone(), create_info).unwrap();
+        let query_pool = if timestamps_supported {
+            let mut create_info = QueryPoolCreateInfo::query_type(QueryType::Timestamp);
+            create_info.query_count = 6;
+            Some(QueryPool::new(device.clone(), create_info).unwrap())
+        } else {
+            None
+        };
 
         unsafe {
+            if let Some(ref qp) = query_pool {
+                command_buffer_builder
+                    .write_timestamp(qp.clone(), 0, sync::PipelineStage::ComputeShader)
+                    .unwrap();
+            }
             command_buffer_builder
-                .write_timestamp(query_pool.clone(), 0, sync::PipelineStage::ComputeShader)
-                .unwrap()
                 .bind_pipeline_compute(compute_pipeline.clone())
                 .unwrap()
                 .push_constants(pipeline_layout.clone(), 0, consts)
@@ -177,9 +193,13 @@ impl CovarianceGpuContext {
                 )
                 .unwrap()
                 .dispatch(work_group_count)
-                .unwrap()
-                .write_timestamp(query_pool.clone(), 1, sync::PipelineStage::ComputeShader)
-                .unwrap()
+                .unwrap();
+            if let Some(ref qp) = query_pool {
+                command_buffer_builder
+                    .write_timestamp(qp.clone(), 1, sync::PipelineStage::ComputeShader)
+                    .unwrap();
+            }
+            command_buffer_builder
                 .push_constants(pipeline_layout.clone(), 0, consts)
                 .unwrap()
                 .bind_descriptor_sets(
@@ -190,9 +210,12 @@ impl CovarianceGpuContext {
                 )
                 .unwrap()
                 .dispatch(work_group_count)
-                .unwrap()
-                .write_timestamp(query_pool.clone(), 2, sync::PipelineStage::ComputeShader)
                 .unwrap();
+            if let Some(ref qp) = query_pool {
+                command_buffer_builder
+                    .write_timestamp(qp.clone(), 2, sync::PipelineStage::ComputeShader)
+                    .unwrap();
+            }
         }
 
         let command_buffer = command_buffer_builder.build().unwrap();

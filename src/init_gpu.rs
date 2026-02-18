@@ -115,14 +115,14 @@ impl VulkanContext {
 
         let supported_extensions = physical_device.supported_extensions();
         if !supported_extensions.ext_shader_atomic_float {
-            eprintln!("Warning: Device does not support ext_shader_atomic_float extension!");
-            anyhow::bail!("Device does not support required extension");
+            eprintln!("Warning: Device does not support ext_shader_atomic_float extension.");
+            eprintln!("Using fallback implementation with integer atomics.");
         }
 
         let features = physical_device.supported_features();
         if !features.shader_buffer_float32_atomic_add {
-            eprintln!("Warning: Device does not support float32 atomic add!");
-            anyhow::bail!("Device does not support float32 atomic add");
+            eprintln!("Warning: Device does not support float32 atomic add feature.");
+            eprintln!("Using fallback implementation with integer atomics.");
         }
 
         // if !features.shader_shared_float32_atomic_add {
@@ -134,12 +134,12 @@ impl VulkanContext {
             physical_device.clone(),
             DeviceCreateInfo {
                 enabled_extensions: DeviceExtensions {
-                    ext_shader_atomic_float: true,
+                    ext_shader_atomic_float: supported_extensions.ext_shader_atomic_float,
                     khr_portability_subset: supported_extensions.khr_portability_subset,
                     ..Default::default()
                 },
                 enabled_features: DeviceFeatures {
-                    shader_buffer_float32_atomic_add: true,
+                    shader_buffer_float32_atomic_add: features.shader_buffer_float32_atomic_add,
                     // shader_shared_float32_atomic_add: true,
                     ..Default::default()
                 },

@@ -1,5 +1,4 @@
 #version 450
-#extension GL_EXT_shader_atomic_float : require
 
 layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 
@@ -21,7 +20,7 @@ layout(push_constant) uniform PushConstants {
 
 layout(set = 0, binding = 0) buffer InputPoints { float in_points[]; };
 layout(set = 0, binding = 1) buffer TableKeys   { uint table_keys[]; };
-layout(set = 0, binding = 2) buffer TableCentroids { float table_centroids[]; };
+layout(set = 0, binding = 2) buffer TableCentroids { uint table_centroids[]; };
 layout(set = 0, binding = 3) buffer TableCounts { uint table_counts[]; };
 layout(set = 0, binding = 4) buffer OutputPoints { float out_points[]; };
 layout(set = 0, binding = 5) buffer OutputCount  { uint out_count; };
@@ -37,9 +36,9 @@ void main() {
     uint count = table_counts[idx];
 
     if (key != EMPTY_KEY && count > 0) {
-        float sx = table_centroids[3 * idx + 0];
-        float sy = table_centroids[3 * idx + 1];
-        float sz = table_centroids[3 * idx + 2];
+        float sx = uintBitsToFloat(table_centroids[3 * idx + 0]);
+        float sy = uintBitsToFloat(table_centroids[3 * idx + 1]);
+        float sz = uintBitsToFloat(table_centroids[3 * idx + 2]);
 
         if (count > 1) {
             float inv = 1.0 / float(count);

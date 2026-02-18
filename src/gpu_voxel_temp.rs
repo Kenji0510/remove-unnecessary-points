@@ -66,18 +66,21 @@ pub fn voxelization(pts: &[[f32; 3]], voxel_size: f32) -> Result<Vec<[f32; 3]>> 
         .expect("Could not find a compute queue family!") as u32;
 
     let supported_extensions = physical_device.supported_extensions();
-    if !supported_extensions.ext_shader_atomic_float {
-        eprintln!("Warning: Device does not support ext_shader_atomic_float extension!");
-        anyhow::bail!("Device does not support required extension");
+    let has_atomic_float_ext = supported_extensions.ext_shader_atomic_float;
+    if !has_atomic_float_ext {
+        eprintln!("Warning: Device does not support ext_shader_atomic_float extension.");
+        eprintln!("Using fallback implementation with integer atomics.");
     }
 
     let features = physical_device.supported_features();
-    if !features.shader_buffer_float32_atomic_add {
-        eprintln!("Warning: Device does not support float32 atomic add!");
-        anyhow::bail!("Device does not support float32 atomic add");
+    let has_buffer_float32_atomic = features.shader_buffer_float32_atomic_add;
+    let has_shared_float32_atomic = features.shader_shared_float32_atomic_add;
+    if !has_buffer_float32_atomic {
+        eprintln!("Warning: Device does not support float32 atomic add feature.");
+        eprintln!("Using fallback implementation with integer atomics.");
     }
 
-    if !features.shader_shared_float32_atomic_add {
+    if !has_shared_float32_atomic {
         eprintln!("Error: Device does not support shader_shared_float32_atomic_add!");
         anyhow::bail!("Missing required feature for shared memory atomics");
     }
@@ -86,12 +89,12 @@ pub fn voxelization(pts: &[[f32; 3]], voxel_size: f32) -> Result<Vec<[f32; 3]>> 
         physical_device,
         DeviceCreateInfo {
             enabled_extensions: DeviceExtensions {
-                ext_shader_atomic_float: true,
+                ext_shader_atomic_float: has_atomic_float_ext,
                 ..Default::default()
             },
             enabled_features: DeviceFeatures {
-                shader_buffer_float32_atomic_add: true,
-                shader_shared_float32_atomic_add: true,
+                shader_buffer_float32_atomic_add: has_buffer_float32_atomic,
+                shader_shared_float32_atomic_add: has_shared_float32_atomic,
                 ..Default::default()
             },
             queue_create_infos: vec![QueueCreateInfo {

@@ -1,5 +1,4 @@
 #version 450
-#extension GL_EXT_shader_atomic_float : require
 
 layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 
@@ -21,7 +20,7 @@ layout(push_constant) uniform PushConstants {
 
 layout(set = 0, binding = 0) buffer InputPoints { float in_points[]; };
 layout(set = 0, binding = 1) buffer TableKeys   { uint table_keys[]; };
-layout(set = 0, binding = 2) buffer TableCentroids { float table_centroids[]; };
+layout(set = 0, binding = 2) buffer TableCentroids { uint table_centroids[]; };
 layout(set = 0, binding = 3) buffer TableCounts { uint table_counts[]; };
 //layout(set = 0, binding = 4) buffer OutputPoints { float out_points[]; };
 //layout(set = 0, binding = 5) buffer OutputCount  { uint out_count; };
@@ -38,12 +37,20 @@ void atomicAddSharedFloat(uint index, float val) {
     uint old_val = s_centroids[index];
     do {
         assumed = old_val;
-        // 現在のuint値をfloatに戻して加算し、再度uintにキャスト
         float new_float = uintBitsToFloat(assumed) + val;
         uint new_val = floatBitsToUint(new_float);
-        
-        // assumedと一致していればnew_valに置き換え、そうでなければold_valを更新してリトライ
         old_val = atomicCompSwap(s_centroids[index], assumed, new_val);
+    } while (assumed != old_val);
+}
+
+void atomicAddGlobalFloat(uint index, float val) {
+    uint assumed;
+    uint old_val = table_centroids[index];
+    do {
+        assumed = old_val;
+        float new_float = uintBitsToFloat(assumed) + val;
+        uint new_val = floatBitsToUint(new_float);
+        old_val = atomicCompSwap(table_centroids[index], assumed, new_val);
     } while (assumed != old_val);
 }
 
@@ -68,9 +75,9 @@ void add_to_global(uint key, float px, float py, float pz, int count) {
         uint old_key = atomicCompSwap(table_keys[idx], EMPTY_KEY, key);
 
         if (old_key == EMPTY_KEY || old_key == key) {
-            atomicAdd(table_centroids[3 * idx + 0], px);
-            atomicAdd(table_centroids[3 * idx + 1], py);
-            atomicAdd(table_centroids[3 * idx + 2], pz);
+            atomicAddGlobalFloat(3 * idx + 0, px);
+            atomicAddGlobalFloat(3 * idx + 1, py);
+            atomicAddGlobalFloat(3 * idx + 2, pz);
             atomicAdd(table_counts[idx], count);
             return;
         }

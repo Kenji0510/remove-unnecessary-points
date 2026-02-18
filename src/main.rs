@@ -129,8 +129,7 @@ fn main() -> Result<()> {
     let mut pts_covs =
         gpu_covariance_ctx.compute_covariances(&downsampled_pts, downsampled_pts.len())?;
 
-    for _ in 0..500 {
-        downsampled_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
+    for _ in 0..10 {        downsampled_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
         println!("GPU voxelization: {} points", downsampled_pts.len());
 
         // let pts_vec: Vec<[f32; 3]> = downsampled_pts

@@ -33,6 +33,18 @@ shared int  s_centroids_y[SHARED_TABLE_SIZE];
 shared int  s_centroids_z[SHARED_TABLE_SIZE];
 shared int s_counts[SHARED_TABLE_SIZE];
 
+uint expandBits(uint v) {
+    v = (v * 0x00010001u) & 0xFF0000FFu;
+    v = (v * 0x00000101u) & 0x0F00F00Fu;
+    v = (v * 0x00000011u) & 0xC30C30C3u;
+    v = (v * 0x00000005u) & 0x49249249u;
+    return v;
+}
+
+uint morton3D(uvec3 v) {
+    return expandBits(v.x) | (expandBits(v.y) << 1) | (expandBits(v.z) << 2);
+}
+
 void atomicAddGlobalFloat(uint index, float val) {
     uint assumed;
     uint old_val = table_centroids[index];
@@ -54,7 +66,8 @@ uint compute_voxel_key(float px, float py, float pz, float voxel_size) {
     vy = clamp(vy, 0, 1023);
     vz = clamp(vz, 0, 1023);
 
-    return uint(vx) | (uint(vy) << 10) | (uint(vz) << 20);
+    // return uint(vx) | (uint(vy) << 10) | (uint(vz) << 20);
+    return morton3D(uvec3(vx, vy, vz));
 }
 
 void add_to_global_accumulated(uint key, int ix, int iy, int iz, int count) {

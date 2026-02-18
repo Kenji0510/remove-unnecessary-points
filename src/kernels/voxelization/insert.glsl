@@ -3,11 +3,11 @@
 layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 
 const uint EMPTY_KEY = 0xFFFFFFFF;
-const uint SHARED_TABLE_SIZE = 2048;
+const uint SHARED_TABLE_SIZE = 1536;
 const uint SHARED_PROBE = 64;
 const uint GLOBAL_PROBE = 1000;
 
-const float FIXED_SCALE = 10000.0;
+const float FIXED_SCALE = 10000.0;  // Match the scale used in compact shader
 const float INV_FIXED_SCALE = 1.0 / FIXED_SCALE;
 
 const int GRID_OFFSET_X = 512;

@@ -14,13 +14,8 @@ use vulkano::{
     sync::{self, GpuFuture},
 };
 
-use crate::init_gpu::VulkanContext;
+use crate::{gpu_voxel::{PushConsts, VoxelGpuContext}, init_gpu::VulkanContext};
 
-#[derive(bytemuck::Pod, bytemuck::Zeroable, Clone, Copy)]
-#[repr(C)]
-struct PushConsts {
-    num_points: i32,
-}
 
 pub struct CovarianceGpuContext {
     vulkan_context: VulkanContext,
@@ -42,7 +37,8 @@ impl CovarianceGpuContext {
             }
         }
 
-        let shader_covariance = cs_covariance::load(vulkan_context.device.clone())?;
+        let shader_covariance = cs_covariance::load(vulkan_context.device.clone())
+            .expect("Failed to load covariance shader!");
 
         let cs_covariance = shader_covariance.entry_point("main").unwrap();
 
@@ -80,6 +76,7 @@ impl CovarianceGpuContext {
 
     pub fn compute_covariances(
         &mut self,
+        voxel_gpu_context: &VoxelGpuContext,
         pts: &[[f32; 3]],
         num_pts: usize,
     ) -> Result<Vec<[f32; 9]>> {
@@ -92,7 +89,10 @@ impl CovarianceGpuContext {
         let compute_pipeline = &self.compute_pipeline;
 
         let consts = PushConsts {
-            num_points: num_pts as i32,
+            num_points: voxel_gpu_context.num_points,
+            table_size: voxel_gpu_context.table_size,
+            voxel_size: voxel_gpu_context.voxel_size,
+            _pad: 0,
         };
 
         // input points
@@ -138,6 +138,18 @@ impl CovarianceGpuContext {
                 ),
                 vulkano::descriptor_set::WriteDescriptorSet::buffer(
                     1,
+                    voxel_gpu_context.d_buf_keys.as_ref().unwrap().clone(),
+                ),
+                vulkano::descriptor_set::WriteDescriptorSet::buffer(
+                    2,
+                    voxel_gpu_context.d_buf_centroids.as_ref().unwrap().clone(),
+                ),
+                vulkano::descriptor_set::WriteDescriptorSet::buffer(
+                    3,
+                    voxel_gpu_context.d_buf_counts.as_ref().unwrap().clone(),
+                ),
+                vulkano::descriptor_set::WriteDescriptorSet::buffer(
+                    4,
                     self.d_buf_output_covs.as_ref().unwrap().clone(),
                 ),
             ],
@@ -230,7 +242,7 @@ impl CovarianceGpuContext {
         future.wait(None).unwrap();
 
         let compute_end_time = compute_start_time.elapsed();
-        println!("Compute shader execution time: {:?}", compute_end_time);
+        println!("Compute covariance shader execution time: {:?}", compute_end_time);
 
         let staging_out_covs = Buffer::new_slice::<f32>(
             memory_allocator.clone(),

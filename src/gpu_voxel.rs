@@ -20,11 +20,11 @@ use crate::init_gpu::VulkanContext;
 
 #[derive(bytemuck::Pod, bytemuck::Zeroable, Clone, Copy)]
 #[repr(C)]
-struct PushConsts {
-    num_points: i32,
-    table_size: i32,
-    voxel_size: f32,
-    _pad: i32,
+pub struct PushConsts {
+    pub num_points: i32,
+    pub table_size: i32,
+    pub voxel_size: f32,
+    pub _pad: i32,
 }
 
 pub struct VoxelGpuContext {
@@ -41,12 +41,16 @@ pub struct VoxelGpuContext {
     descriptor_set_layout_compact: Arc<DescriptorSetLayout>,
 
     staging_h_buf_input_pts: Option<Subbuffer<[f32]>>,
-    d_buf_input_pts: Option<Subbuffer<[f32]>>,
-    d_buf_keys: Option<Subbuffer<[u32]>>,
-    d_buf_centroids: Option<Subbuffer<[u32]>>,
-    d_buf_counts: Option<Subbuffer<[u32]>>,
-    d_buf_out_pts: Option<Subbuffer<[f32]>>,
-    d_buf_counter: Option<Subbuffer<[u32]>>,
+    pub d_buf_input_pts: Option<Subbuffer<[f32]>>,
+    pub d_buf_keys: Option<Subbuffer<[u32]>>,
+    pub d_buf_centroids: Option<Subbuffer<[u32]>>,
+    pub d_buf_counts: Option<Subbuffer<[u32]>>,
+    pub d_buf_out_pts: Option<Subbuffer<[f32]>>,
+    pub d_buf_counter: Option<Subbuffer<[u32]>>,
+
+    pub num_points: i32,
+    pub table_size: i32,
+    pub voxel_size: f32,
 }
 
 impl VoxelGpuContext {
@@ -159,6 +163,9 @@ impl VoxelGpuContext {
             d_buf_counts: None,
             d_buf_out_pts: None,
             d_buf_counter: None,
+            num_points: 0,
+            table_size: 0,
+            voxel_size: 0.0,
         })
     }
 
@@ -181,10 +188,13 @@ impl VoxelGpuContext {
         let compute_pipeline_compact = &self.compute_pipeline_compact;
 
         let table_size = num_pts * 4;
+        self.num_points = num_pts as i32;
+        self.table_size = table_size as i32;
+        self.voxel_size = voxel_size;
         let consts_data = PushConsts {
-            num_points: num_pts as i32,
-            table_size: table_size as i32,
-            voxel_size,
+            num_points: self.num_points,
+            table_size: self.table_size,
+            voxel_size: self.voxel_size,
             _pad: 0,
         };
 
@@ -434,7 +444,7 @@ impl VoxelGpuContext {
         future.wait(None).unwrap();
 
         let compute_end_time = compute_start_time.elapsed();
-        println!("Compute shader execution time: {:?}", compute_end_time);
+        println!("Compute voxelization shader execution time: {:?}", compute_end_time);
 
         let staging_out_pts = Buffer::new_slice::<f32>(
             memory_allocator.clone(),

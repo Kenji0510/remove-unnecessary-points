@@ -4,19 +4,70 @@ layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 
 #define K 20
 const float FLT_MAX = 3.402823466e+38;
+const uint EMPTY_KEY = 0xFFFFFFFF;
+const uint GLOBAL_PROBE = 1000;
+
+const int GRID_OFFSET_X = 512;
+const int GRID_OFFSET_Y = 512;
+const int GRID_OFFSET_Z = 512;
+
+const float FIXED_SCALE = 10000.0;  // Match the scale used in insert shader
+const float INV_FIXED_SCALE = 1.0 / FIXED_SCALE;
 
 layout(set = 0, binding = 0) restrict readonly buffer PointsBuffer {
     float points[];
 };
 
-layout(set = 0, binding = 1) restrict writeonly buffer CovarianceBuffer {
+layout(set = 0, binding = 1) restrict readonly buffer TableKeys {
+    uint table_keys[];
+};
+layout(set = 0, binding = 2) restrict readonly buffer TableCentroids {
+    uint table_centroids[];
+};
+
+layout(set = 0, binding = 3) restrict readonly buffer TableCounts {
+    uint table_counts[]; 
+};
+
+layout(set = 0, binding = 4) restrict writeonly buffer CovarianceBuffer {
     float out_covariances[];
 };
 
 layout(push_constant) uniform PushConstants {
     int num_points;
+    int table_size;
+    float voxel_size;
+    int _pad;
 } pc;
 
+
+uint expandBits(uint v) {
+    v = (v * 0x00010001u) & 0xFF0000FFu;
+    v = (v * 0x00000101u) & 0x0F00F00Fu;
+    v = (v * 0x00000011u) & 0xC30C30C3u;
+    v = (v * 0x00000005u) & 0x49249249u;
+    return v;
+}
+
+uint morton3D(uvec3 v) {
+    return expandBits(v.x) | (expandBits(v.y) << 1) | (expandBits(v.z) << 2);
+}
+
+int find_key_index(uint key) {
+    uint h = (key * 2654435761u);
+    uint idx = h % uint(pc.table_size);
+
+    for (uint i = 0; i < GLOBAL_PROBE; ++i) {
+        uint k = table_keys[idx];
+        if (k == key) {
+            return int(idx);
+        } else if (k == EMPTY_KEY) {
+            return -1;
+        }
+        idx = (idx + 1) % uint(pc.table_size);
+    }
+    return -1;
+}
 
 void eigen_decomposition_3x3(inout float A[3][3], out float evecs[3][3], out float evals[3]) {
     evecs[0][0] = 1.0; evecs[0][1] = 0.0; evecs[0][2] = 0.0;
@@ -99,37 +150,61 @@ void main() {
     float py = points[idx * 3 + 1];
     float pz = points[idx * 3 + 2];
 
-    int neighbor_indices[K];
+    float neighbor_points[K * 3];
     float neighbor_dists[K];
 
     for (int i = 0; i < K; ++i) {
-        neighbor_indices[i] = -1;
         neighbor_dists[i] = FLT_MAX;
     }
 
-    float dmax = neighbor_dists[0];
+    float dmax = FLT_MAX;
     int imax = 0;
 
-    recompute_max_k(neighbor_dists, dmax, imax);
+    float inv_voxel = 1.0 / pc.voxel_size;
+    int cx = int(floor(px * inv_voxel)) + GRID_OFFSET_X;
+    int cy = int(floor(py * inv_voxel)) + GRID_OFFSET_Y;
+    int cz = int(floor(pz * inv_voxel)) + GRID_OFFSET_Z;
 
-    for (int j = 0; j < pc.num_points; ++j) {
-        // Include the query point itself (distance = 0)
-        // if (j == idx) continue;
+    for (int z = -1; z <= 1; ++z) {
+        for (int y = -1; y <= 1; ++y) {
+            for (int x = -1; x <= 1; ++x) {
+                
+                int nx = clamp(cx + x, 0, 1023);
+                int ny = clamp(cy + y, 0, 1023);
+                int nz = clamp(cz + z, 0, 1023);
 
-        float tx = points[j * 3 + 0];
-        float ty = points[j * 3 + 1];
-        float tz = points[j * 3 + 2];
+                uint key = morton3D(uvec3(nx, ny, nz));
+                int table_idx = find_key_index(key);
 
-        float dx = px - tx;
-        float dy = py - ty;
-        float dz = pz - tz;
-        float d2 = dx*dx + dy*dy + dz*dz;
+                if (table_idx != -1) {
+                    uint count = table_counts[table_idx];
+                    
+                    if (count > 0) {
+                        int raw_sum_x = int(table_centroids[3 * table_idx + 0]);
+                        int raw_sum_y = int(table_centroids[3 * table_idx + 1]);
+                        int raw_sum_z = int(table_centroids[3 * table_idx + 2]);
+                        
+                        float div = INV_FIXED_SCALE / float(count);
+                        float tx = float(raw_sum_x) * div;
+                        float ty = float(raw_sum_y) * div;
+                        float tz = float(raw_sum_z) * div;
 
-        if (d2 < dmax) {
-            neighbor_dists[imax] = d2;
-            neighbor_indices[imax] = j;
+                        float dx = px - tx;
+                        float dy = py - ty;
+                        float dz = pz - tz;
+                        float d2 = dx*dx + dy*dy + dz*dz;
 
-            recompute_max_k(neighbor_dists, dmax, imax);
+                        if (d2 < dmax) {
+                            neighbor_dists[imax] = d2;
+                            neighbor_points[imax * 3 + 0] = tx;
+                            neighbor_points[imax * 3 + 1] = ty;
+                            neighbor_points[imax * 3 + 2] = tz;
+                            
+                            recompute_max_k(neighbor_dists, dmax, imax);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -137,17 +212,15 @@ void main() {
     int valid_count = 0;
 
     for (int i = 0; i < K; ++i) {
-        int n_idx = neighbor_indices[i];
-        if (n_idx == -1) break;
-
-        sum_x += points[n_idx * 3 + 0];
-        sum_y += points[n_idx * 3 + 1];
-        sum_z += points[n_idx * 3 + 2];
+        if (neighbor_dists[i] == FLT_MAX) continue;
+        sum_x += neighbor_points[i * 3 + 0];
+        sum_y += neighbor_points[i * 3 + 1];
+        sum_z += neighbor_points[i * 3 + 2];
         valid_count++;
     }
     
-    if (valid_count < 3) {
-        int base = idx * 9;
+    int base = idx * 9;
+    if (valid_count < 3) {        
         out_covariances[base + 0] = 1.0; out_covariances[base + 1] = 0.0; out_covariances[base + 2] = 0.0;
         out_covariances[base + 3] = 0.0; out_covariances[base + 4] = 1.0; out_covariances[base + 5] = 0.0;
         out_covariances[base + 6] = 0.0; out_covariances[base + 7] = 0.0; out_covariances[base + 8] = 1.0;
@@ -162,19 +235,15 @@ void main() {
     float c_xx = 0.0, c_xy = 0.0, c_xz = 0.0;
     float c_yy = 0.0, c_yz = 0.0, c_zz = 0.0;
 
-    for (int i = 0; i < valid_count; ++i) {
-        int n_idx = neighbor_indices[i];
+    for (int i = 0; i < K; ++i) {
+        if (neighbor_dists[i] == FLT_MAX) continue;
 
-        float dx = points[n_idx * 3 + 0] - mean_x;
-        float dy = points[n_idx * 3 + 1] - mean_y;
-        float dz = points[n_idx * 3 + 2] - mean_z;
+        float dx = neighbor_points[i * 3 + 0] - mean_x;
+        float dy = neighbor_points[i * 3 + 1] - mean_y;
+        float dz = neighbor_points[i * 3 + 2] - mean_z;
 
-        c_xx += dx * dx;
-        c_xy += dx * dy;
-        c_xz += dx * dz;
-        c_yy += dy * dy;
-        c_yz += dy * dz;
-        c_zz += dz * dz;
+        c_xx += dx * dx; c_xy += dx * dy; c_xz += dx * dz;
+        c_yy += dy * dy; c_yz += dy * dz; c_zz += dz * dz;
     }
 
     float mat[3][3];
@@ -207,14 +276,11 @@ void main() {
         r00 += lambda * vx * vx;
         r01 += lambda * vx * vy;
         r02 += lambda * vx * vz;
-
         r11 += lambda * vy * vy;
         r12 += lambda * vy * vz;
-
         r22 += lambda * vz * vz;
     }
 
-    int base = idx * 9;
     out_covariances[base + 0] = r00;
     out_covariances[base + 1] = r01;
     out_covariances[base + 2] = r02;

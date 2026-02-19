@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use core::num;
 use std::{sync::Arc, time::Instant};
 use vulkano::{
     buffer::{Buffer, BufferCreateInfo, BufferUsage, Subbuffer},
@@ -83,15 +84,21 @@ impl VoxelGpuContext {
         }
 
         let shader_init =
-            cs_init::load(vulkan_context.device.clone()).expect("Failed to load shader!");
-        let shader_insert =
-            cs_insert::load(vulkan_context.device.clone()).expect("Failed to load shader!");
-        let shader_compact =
-            cs_compact::load(vulkan_context.device.clone()).expect("Failed to load shader!");
+            cs_init::load(vulkan_context.device.clone()).context("Failed to load init shader")?;
+        let shader_insert = cs_insert::load(vulkan_context.device.clone())
+            .context("Failed to load insert shader")?;
+        let shader_compact = cs_compact::load(vulkan_context.device.clone())
+            .context("Failed to load compact shader")?;
 
-        let cs_init = shader_init.entry_point("main").unwrap();
-        let cs_insert = shader_insert.entry_point("main").unwrap();
-        let cs_compact = shader_compact.entry_point("main").unwrap();
+        let cs_init = shader_init
+            .entry_point("main")
+            .context("Failed to find entry point in init shader")?;
+        let cs_insert = shader_insert
+            .entry_point("main")
+            .context("Failed to find entry point in insert shader")?;
+        let cs_compact = shader_compact
+            .entry_point("main")
+            .context("Failed to find entry point in compact shader")?;
 
         let stage_init = PipelineShaderStageCreateInfo::new(cs_init);
         let stage_insert = PipelineShaderStageCreateInfo::new(cs_insert);
@@ -101,42 +108,42 @@ impl VoxelGpuContext {
             vulkan_context.device.clone(),
             PipelineDescriptorSetLayoutCreateInfo::from_stages([&stage_init])
                 .into_pipeline_layout_create_info(vulkan_context.device.clone())
-                .expect("Failed to create pipeline layout"),
+                .context("Failed to create pipeline layout")?,
         )
-        .expect("Failed to create pipeline layout");
+        .context("Failed to create pipeline layout")?;
         let layout_insert = PipelineLayout::new(
             vulkan_context.device.clone(),
             PipelineDescriptorSetLayoutCreateInfo::from_stages([&stage_insert])
                 .into_pipeline_layout_create_info(vulkan_context.device.clone())
-                .expect("Failed to create pipeline layout"),
+                .context("Failed to create pipeline layout")?,
         )
-        .expect("Failed to create pipeline layout");
+        .context("Failed to create pipeline layout")?;
         let layout_compact = PipelineLayout::new(
             vulkan_context.device.clone(),
             PipelineDescriptorSetLayoutCreateInfo::from_stages([&stage_compact])
                 .into_pipeline_layout_create_info(vulkan_context.device.clone())
-                .expect("Failed to create pipeline layout"),
+                .context("Failed to create pipeline layout")?,
         )
-        .expect("Failed to create pipeline layout");
+        .context("Failed to create pipeline layout")?;
 
         let compute_pipeline_init = ComputePipeline::new(
             vulkan_context.device.clone(),
             None,
             ComputePipelineCreateInfo::stage_layout(stage_init, layout_init),
         )
-        .expect("Failed to create compute pipeline init");
+        .context("Failed to create compute pipeline init")?;
         let compute_pipeline_insert = ComputePipeline::new(
             vulkan_context.device.clone(),
             None,
             ComputePipelineCreateInfo::stage_layout(stage_insert, layout_insert),
         )
-        .expect("Failed to create compute pipeline insert");
+        .context("Failed to create compute pipeline insert")?;
         let compute_pipeline_compact = ComputePipeline::new(
             vulkan_context.device.clone(),
             None,
             ComputePipelineCreateInfo::stage_layout(stage_compact, layout_compact),
         )
-        .expect("Failed to create compute pipeline compact");
+        .context("Failed to create compute pipeline compact")?;
 
         let descriptor_set_allocator = Arc::new(StandardDescriptorSetAllocator::new(
             vulkan_context.device.clone(),
@@ -147,9 +154,18 @@ impl VoxelGpuContext {
         let pipeline_layout_insert = compute_pipeline_insert.layout();
         let pipeline_layout_compact = compute_pipeline_compact.layout();
 
-        let descriptor_set_layout_init = pipeline_layout_init.set_layouts().get(0).unwrap();
-        let descriptor_set_layout_insert = pipeline_layout_insert.set_layouts().get(0).unwrap();
-        let descriptor_set_layout_compact = pipeline_layout_compact.set_layouts().get(0).unwrap();
+        let descriptor_set_layout_init = pipeline_layout_init
+            .set_layouts()
+            .get(0)
+            .context("Failed to get descriptor set layout for init")?;
+        let descriptor_set_layout_insert = pipeline_layout_insert
+            .set_layouts()
+            .get(0)
+            .context("Failed to get descriptor set layout for insert")?;
+        let descriptor_set_layout_compact = pipeline_layout_compact
+            .set_layouts()
+            .get(0)
+            .context("Failed to get descriptor set layout for compact")?;
 
         Ok(Self {
             vulkan_context: vulkan_context.clone(),
@@ -185,6 +201,10 @@ impl VoxelGpuContext {
         num_pts: usize,
         voxel_size: f32,
     ) -> Result<Vec<[f32; 3]>> {
+        if num_pts == 0 {
+            return Ok(vec![]);
+        }
+
         let device = &self.vulkan_context.device;
         let queue = &self.vulkan_context.queue;
         let memory_allocator = &self.vulkan_context.memory_allocator;
@@ -243,7 +263,7 @@ impl VoxelGpuContext {
                 (new_capacity * 3) as u64,
             )?);
 
-            self.d_buf_keys = Buffer::new_slice::<u32>(
+            self.d_buf_keys = Some(Buffer::new_slice::<u32>(
                 memory_allocator.clone(),
                 BufferCreateInfo {
                     usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_DST,
@@ -254,11 +274,9 @@ impl VoxelGpuContext {
                     ..Default::default()
                 },
                 new_table_size as u64,
-            )
-            .expect("Failed to create buf_keys buffer")
-            .into();
+            )?);
 
-            self.d_buf_centroids = Buffer::new_slice::<u32>(
+            self.d_buf_centroids = Some(Buffer::new_slice::<u32>(
                 memory_allocator.clone(),
                 BufferCreateInfo {
                     usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_DST,
@@ -269,11 +287,9 @@ impl VoxelGpuContext {
                     ..Default::default()
                 },
                 (new_table_size * 3) as u64,
-            )
-            .expect("Failed to create buf_centroids buffer")
-            .into();
+            )?);
 
-            self.d_buf_counts = Buffer::new_slice::<u32>(
+            self.d_buf_counts = Some(Buffer::new_slice::<u32>(
                 memory_allocator.clone(),
                 BufferCreateInfo {
                     usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_DST,
@@ -284,11 +300,9 @@ impl VoxelGpuContext {
                     ..Default::default()
                 },
                 new_table_size as u64,
-            )
-            .expect("Failed to create buf_counts buffer")
-            .into();
+            )?);
 
-            self.d_buf_out_pts = Buffer::new_slice::<f32>(
+            self.d_buf_out_pts = Some(Buffer::new_slice::<f32>(
                 memory_allocator.clone(),
                 BufferCreateInfo {
                     usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_SRC,
@@ -299,11 +313,9 @@ impl VoxelGpuContext {
                     ..Default::default()
                 },
                 (new_capacity * 3) as u64,
-            )
-            .expect("Failed to create buf_out_pts buffer")
-            .into();
+            )?);
 
-            self.d_buf_counter = Buffer::new_slice::<u32>(
+            self.d_buf_counter = Some(Buffer::new_slice::<u32>(
                 memory_allocator.clone(),
                 BufferCreateInfo {
                     usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_SRC,
@@ -314,27 +326,21 @@ impl VoxelGpuContext {
                     ..Default::default()
                 },
                 1,
-            )
-            .expect("Failed to create buf_counter buffer")
-            .into();
+            )?);
 
-            self.staging_buf_output_pts = Some(
-                Buffer::new_slice(
-                    memory_allocator.clone(),
-                    BufferCreateInfo {
-                        usage: BufferUsage::TRANSFER_DST,
-                        ..Default::default()
-                    },
-                    AllocationCreateInfo {
-                        memory_type_filter: MemoryTypeFilter::PREFER_HOST
-                            | MemoryTypeFilter::HOST_RANDOM_ACCESS,
-                        ..Default::default()
-                    },
-                    (new_capacity * 3) as u64,
-                )
-                .expect("Failed to create staging_buf_output_pts buffer")
-                .into(),
-            );
+            self.staging_buf_output_pts = Some(Buffer::new_slice::<f32>(
+                memory_allocator.clone(),
+                BufferCreateInfo {
+                    usage: BufferUsage::TRANSFER_DST,
+                    ..Default::default()
+                },
+                AllocationCreateInfo {
+                    memory_type_filter: MemoryTypeFilter::PREFER_HOST
+                        | MemoryTypeFilter::HOST_RANDOM_ACCESS,
+                    ..Default::default()
+                },
+                (new_capacity * 3) as u64,
+            )?);
 
             self.staging_buf_output_counter = Some(Buffer::new_slice::<u32>(
                 memory_allocator.clone(),
@@ -348,20 +354,15 @@ impl VoxelGpuContext {
                     ..Default::default()
                 },
                 1,
-                )
-                .expect("Failed to create staging_buf_output_counter buffer")
-                .into()
-            );
+            )?);
         }
 
         // let flattened_pts: Vec<f32> = pts.iter().flat_map(|arr| arr.iter().copied()).collect();
         // input points
         if let Some(staging_buf) = &self.staging_buf_input_pts {
             let mut mapping = staging_buf.write()?;
-            for (i, pt) in pts.iter().enumerate() {
-                mapping[i * 3 + 0] = pt[0];
-                mapping[i * 3 + 1] = pt[1];
-                mapping[i * 3 + 2] = pt[2];
+            for (chunk, pt) in mapping.chunks_exact_mut(3).zip(pts.iter()) {
+                chunk.copy_from_slice(pt);
             }
         }
 
@@ -370,11 +371,35 @@ impl VoxelGpuContext {
             self.descriptor_set_layout_init.clone(),
             [
                 // WriteDescriptorSet::buffer(0, buf_input_pts.clone()),
-                WriteDescriptorSet::buffer(1, self.d_buf_keys.as_ref().unwrap().clone()),
-                WriteDescriptorSet::buffer(2, self.d_buf_centroids.as_ref().unwrap().clone()),
-                WriteDescriptorSet::buffer(3, self.d_buf_counts.as_ref().unwrap().clone()),
+                WriteDescriptorSet::buffer(
+                    1,
+                    self.d_buf_keys
+                        .as_ref()
+                        .context("d_buf_keys is None")?
+                        .clone(),
+                ),
+                WriteDescriptorSet::buffer(
+                    2,
+                    self.d_buf_centroids
+                        .as_ref()
+                        .context("d_buf_centroids is None")?
+                        .clone(),
+                ),
+                WriteDescriptorSet::buffer(
+                    3,
+                    self.d_buf_counts
+                        .as_ref()
+                        .context("d_buf_counts is None")?
+                        .clone(),
+                ),
                 // WriteDescriptorSet::buffer(4, buf_out_pts.clone()),
-                WriteDescriptorSet::buffer(5, self.d_buf_counter.as_ref().unwrap().clone()),
+                WriteDescriptorSet::buffer(
+                    5,
+                    self.d_buf_counter
+                        .as_ref()
+                        .context("d_buf_counter is None")?
+                        .clone(),
+                ),
             ],
             [],
         )
@@ -384,10 +409,34 @@ impl VoxelGpuContext {
             descriptor_set_allocator.clone(),
             self.descriptor_set_layout_insert.clone(),
             [
-                WriteDescriptorSet::buffer(0, self.d_buf_input_pts.as_ref().unwrap().clone()),
-                WriteDescriptorSet::buffer(1, self.d_buf_keys.as_ref().unwrap().clone()),
-                WriteDescriptorSet::buffer(2, self.d_buf_centroids.as_ref().unwrap().clone()),
-                WriteDescriptorSet::buffer(3, self.d_buf_counts.as_ref().unwrap().clone()),
+                WriteDescriptorSet::buffer(
+                    0,
+                    self.d_buf_input_pts
+                        .as_ref()
+                        .context("d_buf_input_pts is None")?
+                        .clone(),
+                ),
+                WriteDescriptorSet::buffer(
+                    1,
+                    self.d_buf_keys
+                        .as_ref()
+                        .context("d_buf_keys is None")?
+                        .clone(),
+                ),
+                WriteDescriptorSet::buffer(
+                    2,
+                    self.d_buf_centroids
+                        .as_ref()
+                        .context("d_buf_centroids is None")?
+                        .clone(),
+                ),
+                WriteDescriptorSet::buffer(
+                    3,
+                    self.d_buf_counts
+                        .as_ref()
+                        .context("d_buf_counts is None")?
+                        .clone(),
+                ),
                 // WriteDescriptorSet::buffer(4, buf_out_pts.clone()),
                 // WriteDescriptorSet::buffer(5, buf_counter.clone()),
             ],
@@ -400,11 +449,41 @@ impl VoxelGpuContext {
             self.descriptor_set_layout_compact.clone(),
             [
                 // WriteDescriptorSet::buffer(0, buf_input_pts.clone()),
-                WriteDescriptorSet::buffer(1, self.d_buf_keys.as_ref().unwrap().clone()),
-                WriteDescriptorSet::buffer(2, self.d_buf_centroids.as_ref().unwrap().clone()),
-                WriteDescriptorSet::buffer(3, self.d_buf_counts.as_ref().unwrap().clone()),
-                WriteDescriptorSet::buffer(4, self.d_buf_out_pts.as_ref().unwrap().clone()),
-                WriteDescriptorSet::buffer(5, self.d_buf_counter.as_ref().unwrap().clone()),
+                WriteDescriptorSet::buffer(
+                    1,
+                    self.d_buf_keys
+                        .as_ref()
+                        .context("d_buf_keys is None")?
+                        .clone(),
+                ),
+                WriteDescriptorSet::buffer(
+                    2,
+                    self.d_buf_centroids
+                        .as_ref()
+                        .context("d_buf_centroids is None")?
+                        .clone(),
+                ),
+                WriteDescriptorSet::buffer(
+                    3,
+                    self.d_buf_counts
+                        .as_ref()
+                        .context("d_buf_counts is None")?
+                        .clone(),
+                ),
+                WriteDescriptorSet::buffer(
+                    4,
+                    self.d_buf_out_pts
+                        .as_ref()
+                        .context("d_buf_out_pts is None")?
+                        .clone(),
+                ),
+                WriteDescriptorSet::buffer(
+                    5,
+                    self.d_buf_counter
+                        .as_ref()
+                        .context("d_buf_counter is None")?
+                        .clone(),
+                ),
             ],
             [],
         )
@@ -415,18 +494,18 @@ impl VoxelGpuContext {
             queue.queue_family_index().clone(),
             CommandBufferUsage::OneTimeSubmit,
         )
-        .unwrap();
+        .context("Failed to create command buffer builder")?;
 
         let copy_src = self
             .staging_buf_input_pts
             .as_ref()
-            .unwrap()
+            .context("staging_buf_input_pts is None")?
             .clone()
             .slice(0..(num_pts * 3) as u64);
         let copy_dst = self
             .d_buf_input_pts
             .as_ref()
-            .unwrap()
+            .context("d_buf_input_pts is None")?
             .clone()
             .slice(0..(num_pts * 3) as u64);
         command_buffer_builder.copy_buffer(CopyBufferInfo::buffers(copy_src, copy_dst))?;
@@ -440,7 +519,7 @@ impl VoxelGpuContext {
             .physical_device()
             .queue_family_properties()
             .get(queue.queue_family_index() as usize)
-            .unwrap();
+            .context("Failed to get queue family properties")?;
         let timestamps_supported = queue_family_props
             .timestamp_valid_bits
             .map_or(false, |bits| bits > 0);
@@ -448,106 +527,79 @@ impl VoxelGpuContext {
         let query_pool = if timestamps_supported {
             let mut create_info = QueryPoolCreateInfo::query_type(QueryType::Timestamp);
             create_info.query_count = 6;
-            Some(QueryPool::new(device.clone(), create_info).unwrap())
+            Some(
+                QueryPool::new(device.clone(), create_info)
+                    .context("Failed to create query pool")?,
+            )
         } else {
             None
         };
 
         unsafe {
-            // if let Some(ref qp) = query_pool {
-            //     command_buffer_builder
-            //         .write_timestamp(qp.clone(), 0, sync::PipelineStage::ComputeShader)
-            //         .unwrap()
-            //         .write_timestamp(qp.clone(), 1, sync::PipelineStage::ComputeShader)
-            //         .unwrap();
-            // }
             command_buffer_builder
-                .bind_pipeline_compute(compute_pipeline_init.clone())
-                .unwrap()
-                .push_constants(pipeline_layout_init.clone(), 0, consts_data)
-                .unwrap()
+                .bind_pipeline_compute(compute_pipeline_init.clone())?
+                .push_constants(pipeline_layout_init.clone(), 0, consts_data)?
                 .bind_descriptor_sets(
                     vulkano::pipeline::PipelineBindPoint::Compute,
                     pipeline_layout_init.clone(),
                     0,
                     descriptor_set_init.clone(),
-                )
-                .unwrap()
-                .dispatch(work_group_count)
-                .unwrap();
-            // if let Some(ref qp) = query_pool {
-            //     command_buffer_builder
-            //         .write_timestamp(qp.clone(), 2, sync::PipelineStage::ComputeShader)
-            //         .unwrap();
-            // }
+                )?
+                .dispatch(work_group_count)?;
             command_buffer_builder
-                .bind_pipeline_compute(compute_pipeline_insert.clone())
-                .unwrap()
-                .push_constants(pipeline_layout_insert.clone(), 0, consts_data)
-                .unwrap()
+                .bind_pipeline_compute(compute_pipeline_insert.clone())?
+                .push_constants(pipeline_layout_insert.clone(), 0, consts_data)?
                 .bind_descriptor_sets(
                     vulkano::pipeline::PipelineBindPoint::Compute,
                     pipeline_layout_insert.clone(),
                     0,
                     descriptor_set_insert.clone(),
-                )
-                .unwrap()
-                .dispatch(work_group_count)
-                .unwrap();
-            // if let Some(ref qp) = query_pool {
-            //     command_buffer_builder
-            //         .write_timestamp(qp.clone(), 3, sync::PipelineStage::ComputeShader)
-            //         .unwrap();
-            // }
+                )?
+                .dispatch(work_group_count)?;
             command_buffer_builder
-                .bind_pipeline_compute(compute_pipeline_compact.clone())
-                .unwrap()
-                .push_constants(pipeline_layout_compact.clone(), 0, consts_data)
-                .unwrap()
+                .bind_pipeline_compute(compute_pipeline_compact.clone())?
+                .push_constants(pipeline_layout_compact.clone(), 0, consts_data)?
                 .bind_descriptor_sets(
                     vulkano::pipeline::PipelineBindPoint::Compute,
                     pipeline_layout_compact.clone(),
                     0,
                     descriptor_set_compact.clone(),
-                )
-                .unwrap()
-                .dispatch(work_group_count)
-                .unwrap();
-            // if let Some(ref qp) = query_pool {
-            //     command_buffer_builder
-            //         .write_timestamp(qp.clone(), 4, sync::PipelineStage::ComputeShader)
-            //         .unwrap();
-            // }
+                )?
+                .dispatch(work_group_count)?;
         }
 
         let copy_out_src = self
             .d_buf_out_pts
             .as_ref()
-            .unwrap()
+            .context("d_buf_out_pts is None")?
             .clone()
             .slice(0..(num_pts * 3) as u64);
         let copy_out_dst = self
             .staging_buf_output_pts
             .as_ref()
-            .unwrap()
+            .context("staging_buf_output_pts is None")?
             .clone()
             .slice(0..(num_pts * 3) as u64);
         command_buffer_builder.copy_buffer(CopyBufferInfo::buffers(copy_out_src, copy_out_dst))?;
         command_buffer_builder.copy_buffer(CopyBufferInfo::buffers(
-            self.d_buf_counter.as_ref().unwrap().clone(),
-            self.staging_buf_output_counter.as_ref().unwrap().clone(),
+            self.d_buf_counter
+                .as_ref()
+                .context("d_buf_counter is None")?
+                .clone(),
+            self.staging_buf_output_counter
+                .as_ref()
+                .context("staging_buf_output_counter is None")?
+                .clone(),
         ))?;
 
-        let command_buffer = command_buffer_builder.build().unwrap();
+        let command_buffer = command_buffer_builder.build()?;
 
         let compute_start_time = Instant::now();
         let future = sync::now(device.clone())
-            .then_execute(queue.clone(), command_buffer)
-            .unwrap()
-            .then_signal_fence_and_flush()
-            .unwrap();
+            .then_execute(queue.clone(), command_buffer)?
+            .then_signal_fence_and_flush()?;
 
-        future.wait(None).unwrap();
+        future.wait(None)?;
 
         let compute_end_time = compute_start_time.elapsed();
         println!(
@@ -555,16 +607,26 @@ impl VoxelGpuContext {
             compute_end_time
         );
 
-        let counter_content = self.staging_buf_output_counter.as_ref().unwrap().read()?;
+        let counter_content = self
+            .staging_buf_output_counter
+            .as_ref()
+            .context("staging_buf_output_counter is None")?
+            .read()?;
         let num_output_points = counter_content[0] as usize;
         println!("Number of output points: {}", num_output_points);
 
-        let out_pts_content = self.staging_buf_output_pts.as_ref().unwrap().read()?;
+        let out_pts_content = self
+            .staging_buf_output_pts
+            .as_ref()
+            .context("staging_buf_output_pts is None")?
+            .read()?;
         let output_points: Vec<[f32; 3]> = out_pts_content
             .chunks_exact(3)
             .take(num_output_points)
-            .map(|chunk| chunk.try_into().unwrap())
-            .collect();
+            .map(|chunk| -> Result<[f32; 3]> {
+                chunk.try_into().context("Failed to map for output points")
+            })
+            .collect::<Result<Vec<_>, _>>()?;
 
         Ok(output_points)
     }

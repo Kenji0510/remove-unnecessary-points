@@ -100,30 +100,9 @@ fn main() -> Result<()> {
 
     let processed_pcd = grid_to_pcd(&processed_grid);
 
-    // let save_path = format!(
-    //     "data/output/2d-xy/removed_voxel-{}_NUM-{}.pcd",
-    //     VOXEL_SIZE, NUMBERING
-    // );
-    // save_xyz_pcd(&processed_pcd, &save_path).context("Failed to save the processed pcd")?;
-    // println!("Saved processed PCD to {}", save_path);
-
-    // Downsample the points
-    // let pts_array2 = point_xyz_to_array2(&processed_pcd);
-    // let downsampled_pts = voxel_downsample_array2(&pts_array2, VOXEL_SIZE);
-
     let pts_vec = pcd_to_vecf32(&processed_pcd);
     let mut downsampled_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
     println!("GPU voxelization: {} points", downsampled_pts.len());
-
-    // let pts_vec: Vec<[f32; 3]> = downsampled_pts
-    //     .outer_iter()
-    //     .map(|row| [row[0], row[1], row[2]])
-    //     .collect();
-    // println!("CPU downsampling: {} points", pts_vec.len());
-
-    // Convert to flat f32 vec for GPU
-    // let pts_flat: Vec<f32> = pts_vec.iter().flat_map(|p| p.iter().copied()).collect();
-    // let num_points = pts_vec.len();
 
     // Compute covariances on GPU using the same downsampled points
     let mut pts_covs = gpu_covariance_ctx.compute_covariances(
@@ -137,16 +116,6 @@ fn main() -> Result<()> {
         downsampled_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
         println!("GPU voxelization: {} points", downsampled_pts.len());
 
-        // let pts_vec: Vec<[f32; 3]> = downsampled_pts
-        //     .outer_iter()
-        //     .map(|row| [row[0], row[1], row[2]])
-        //     .collect();
-        // println!("CPU downsampling: {} points", pts_vec.len());
-
-        // Convert to flat f32 vec for GPU
-        // let pts_flat: Vec<f32> = pts_vec.iter().flat_map(|p| p.iter().copied()).collect();
-        // let num_points = pts_vec.len();
-
         // Compute covariances on GPU using the same downsampled points
         pts_covs = gpu_covariance_ctx.compute_covariances(
             &gpu_voxel_ctx,
@@ -155,9 +124,6 @@ fn main() -> Result<()> {
             false,
         )?;
     }
-
-    // let pts_kdtree = kiddo::ImmutableKdTree::new_from_slice(&pts_vec);
-    // let shape_feats = compute_shape_features(&downsampled_pts, &pts_kdtree, K_NEIGHBORS);
 
     let shape_feats = compute_shape_features_02(&pts_covs);
 
@@ -356,11 +322,11 @@ pub fn compute_shape_features(
     pts: &Array2<f32>,
     kdtree: &kiddo::ImmutableKdTree<f32, 3>,
     k_neighbors: usize,
-) -> Vec<ShapeFeat> {
+) -> Result<Vec<ShapeFeat>> {
     let n_points = pts.nrows();
-    let k_neighbors = NonZeroUsize::new(k_neighbors).unwrap();
+    let k_neighbors = NonZeroUsize::new(k_neighbors).context("Invalid number of neighbors")?;
 
-    (0..n_points)
+    let shape_feats = (0..n_points)
         .into_par_iter()
         .map(|i| {
             let query = [pts[[i, 0]], pts[[i, 1]], pts[[i, 2]]];
@@ -425,7 +391,9 @@ pub fn compute_shape_features(
                 l3,
             }
         })
-        .collect()
+        .collect();
+
+    Ok(shape_feats)
 }
 
 pub fn compute_shape_features_02(covs: &Vec<[f32; 9]>) -> Vec<ShapeFeat> {

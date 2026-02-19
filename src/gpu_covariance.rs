@@ -187,11 +187,11 @@ impl CovarianceGpuContext {
         };
 
         unsafe {
-            if let Some(ref qp) = query_pool {
-                command_buffer_builder
-                    .write_timestamp(qp.clone(), 0, sync::PipelineStage::ComputeShader)
-                    .unwrap();
-            }
+            // if let Some(ref qp) = query_pool {
+            //     command_buffer_builder
+            //         .write_timestamp(qp.clone(), 0, sync::PipelineStage::ComputeShader)
+            //         .unwrap();
+            // }
             command_buffer_builder
                 .bind_pipeline_compute(compute_pipeline.clone())
                 .unwrap()
@@ -206,11 +206,11 @@ impl CovarianceGpuContext {
                 .unwrap()
                 .dispatch(work_group_count)
                 .unwrap();
-            if let Some(ref qp) = query_pool {
-                command_buffer_builder
-                    .write_timestamp(qp.clone(), 1, sync::PipelineStage::ComputeShader)
-                    .unwrap();
-            }
+            // if let Some(ref qp) = query_pool {
+            //     command_buffer_builder
+            //         .write_timestamp(qp.clone(), 1, sync::PipelineStage::ComputeShader)
+            //         .unwrap();
+            // }
             command_buffer_builder
                 .push_constants(pipeline_layout.clone(), 0, consts)
                 .unwrap()
@@ -223,11 +223,11 @@ impl CovarianceGpuContext {
                 .unwrap()
                 .dispatch(work_group_count)
                 .unwrap();
-            if let Some(ref qp) = query_pool {
-                command_buffer_builder
-                    .write_timestamp(qp.clone(), 2, sync::PipelineStage::ComputeShader)
-                    .unwrap();
-            }
+            // if let Some(ref qp) = query_pool {
+            //     command_buffer_builder
+            //         .write_timestamp(qp.clone(), 2, sync::PipelineStage::ComputeShader)
+            //         .unwrap();
+            // }
         }
 
         let command_buffer = command_buffer_builder.build().unwrap();

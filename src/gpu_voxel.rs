@@ -366,13 +366,13 @@ impl VoxelGpuContext {
         };
 
         unsafe {
-            if let Some(ref qp) = query_pool {
-                command_buffer_builder
-                    .write_timestamp(qp.clone(), 0, sync::PipelineStage::ComputeShader)
-                    .unwrap()
-                    .write_timestamp(qp.clone(), 1, sync::PipelineStage::ComputeShader)
-                    .unwrap();
-            }
+            // if let Some(ref qp) = query_pool {
+            //     command_buffer_builder
+            //         .write_timestamp(qp.clone(), 0, sync::PipelineStage::ComputeShader)
+            //         .unwrap()
+            //         .write_timestamp(qp.clone(), 1, sync::PipelineStage::ComputeShader)
+            //         .unwrap();
+            // }
             command_buffer_builder
                 .bind_pipeline_compute(compute_pipeline_init.clone())
                 .unwrap()
@@ -387,11 +387,11 @@ impl VoxelGpuContext {
                 .unwrap()
                 .dispatch(work_group_count)
                 .unwrap();
-            if let Some(ref qp) = query_pool {
-                command_buffer_builder
-                    .write_timestamp(qp.clone(), 2, sync::PipelineStage::ComputeShader)
-                    .unwrap();
-            }
+            // if let Some(ref qp) = query_pool {
+            //     command_buffer_builder
+            //         .write_timestamp(qp.clone(), 2, sync::PipelineStage::ComputeShader)
+            //         .unwrap();
+            // }
             command_buffer_builder
                 .bind_pipeline_compute(compute_pipeline_insert.clone())
                 .unwrap()
@@ -406,11 +406,11 @@ impl VoxelGpuContext {
                 .unwrap()
                 .dispatch(work_group_count)
                 .unwrap();
-            if let Some(ref qp) = query_pool {
-                command_buffer_builder
-                    .write_timestamp(qp.clone(), 3, sync::PipelineStage::ComputeShader)
-                    .unwrap();
-            }
+            // if let Some(ref qp) = query_pool {
+            //     command_buffer_builder
+            //         .write_timestamp(qp.clone(), 3, sync::PipelineStage::ComputeShader)
+            //         .unwrap();
+            // }
             command_buffer_builder
                 .bind_pipeline_compute(compute_pipeline_compact.clone())
                 .unwrap()
@@ -425,11 +425,11 @@ impl VoxelGpuContext {
                 .unwrap()
                 .dispatch(work_group_count)
                 .unwrap();
-            if let Some(ref qp) = query_pool {
-                command_buffer_builder
-                    .write_timestamp(qp.clone(), 4, sync::PipelineStage::ComputeShader)
-                    .unwrap();
-            }
+            // if let Some(ref qp) = query_pool {
+            //     command_buffer_builder
+            //         .write_timestamp(qp.clone(), 4, sync::PipelineStage::ComputeShader)
+            //         .unwrap();
+            // }
         }
 
         let command_buffer = command_buffer_builder.build().unwrap();

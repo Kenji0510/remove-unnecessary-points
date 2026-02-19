@@ -100,53 +100,54 @@ PLANARITY_THRESHOLD: 0.6
 LINEARITY_THRESHOLD: 0.5
 SCATTERING_THRESHOLD: 0.2
 ====================
-Compute voxelization shader execution time: 347.306µs
+Reallocating buffers for 79662 points
+Compute voxelization shader execution time: 475.497µs
 Number of output points: 12729
 GPU voxelization: 12729 points
-Compute covariance shader execution time: 132.65µs
-Compute voxelization shader execution time: 87.966µs
+Compute covariance shader execution time: 161.003µs
+Compute voxelization shader execution time: 153.169µs
 Number of output points: 12729
 GPU voxelization: 12729 points
-Compute covariance shader execution time: 119.416µs
-Compute voxelization shader execution time: 83.258µs
+Compute covariance shader execution time: 132.16µs
+Compute voxelization shader execution time: 148.39µs
 Number of output points: 12729
 GPU voxelization: 12729 points
-Compute covariance shader execution time: 123.294µs
-Compute voxelization shader execution time: 76.635µs
+Compute covariance shader execution time: 129.745µs
+Compute voxelization shader execution time: 139.303µs
 Number of output points: 12729
 GPU voxelization: 12729 points
-Compute covariance shader execution time: 119.867µs
-Compute voxelization shader execution time: 66.136µs
+Compute covariance shader execution time: 125.947µs
+Compute voxelization shader execution time: 136.197µs
 Number of output points: 12729
 GPU voxelization: 12729 points
-Compute covariance shader execution time: 139.073µs
-Compute voxelization shader execution time: 68.36µs
+Compute covariance shader execution time: 118.834µs
+Compute voxelization shader execution time: 139.062µs
 Number of output points: 12729
 GPU voxelization: 12729 points
-Compute covariance shader execution time: 118.324µs
-Compute voxelization shader execution time: 84.259µs
+Compute covariance shader execution time: 119.374µs
+Compute voxelization shader execution time: 140.484µs
 Number of output points: 12729
 GPU voxelization: 12729 points
-Compute covariance shader execution time: 122.311µs
-Compute voxelization shader execution time: 66.455µs
+Compute covariance shader execution time: 120.939µs
+Compute voxelization shader execution time: 140.335µs
 Number of output points: 12729
 GPU voxelization: 12729 points
-Compute covariance shader execution time: 119.946µs
-Compute voxelization shader execution time: 68.93µs
+Compute covariance shader execution time: 118.554µs
+Compute voxelization shader execution time: 140.445µs
 Number of output points: 12729
 GPU voxelization: 12729 points
-Compute covariance shader execution time: 125.417µs
-Compute voxelization shader execution time: 74.891µs
+Compute covariance shader execution time: 118.072µs
+Compute voxelization shader execution time: 134.063µs
 Number of output points: 12729
 GPU voxelization: 12729 points
-Compute covariance shader execution time: 136.327µs
-Compute voxelization shader execution time: 83.006µs
+Compute covariance shader execution time: 117.38µs
+Compute voxelization shader execution time: 140.245µs
 Number of output points: 12729
 GPU voxelization: 12729 points
-Compute covariance shader execution time: 128.022µs
+Compute covariance shader execution time: 116.058µs
 === Processing Result ===
 After processed points: 2085
-Processing time: 48.40ms
+Processing time: 96.72ms
 Saved removed unnecessary points pcd to data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxel-0.1_NUM-125.pcd
 Saved voxelized pcd with shape features to data/output/2d-xy/convert-2d-pts-by-covariance/original-by-shape-feats_voxel-0.1_NUM-125.pcd
 ```

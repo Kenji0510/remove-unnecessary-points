@@ -48,6 +48,12 @@ pub struct VoxelGpuContext {
     pub d_buf_out_pts: Option<Subbuffer<[f32]>>,
     pub d_buf_counter: Option<Subbuffer<[u32]>>,
 
+    staging_buf_input_pts: Option<Subbuffer<[f32]>>,
+    staging_buf_output_pts: Option<Subbuffer<[f32]>>,
+    staging_buf_output_counter: Option<Subbuffer<[u32]>>,
+
+    pub current_capacity_pts: usize,
+
     pub num_points: i32,
     pub table_size: i32,
     pub voxel_size: f32,
@@ -163,6 +169,10 @@ impl VoxelGpuContext {
             d_buf_counts: None,
             d_buf_out_pts: None,
             d_buf_counter: None,
+            staging_buf_input_pts: None,
+            staging_buf_output_pts: None,
+            staging_buf_output_counter: None,
+            current_capacity_pts: 0,
             num_points: 0,
             table_size: 0,
             voxel_size: 0.0,
@@ -198,98 +208,162 @@ impl VoxelGpuContext {
             _pad: 0,
         };
 
+        if self.current_capacity_pts < num_pts {
+            println!("Reallocating buffers for {} points", num_pts);
+
+            let new_capacity = (num_pts as f64 * 1.5) as usize;
+            self.current_capacity_pts = new_capacity;
+            let new_table_size = new_capacity * 4;
+
+            // For input points
+            self.staging_buf_input_pts = Some(Buffer::new_slice::<f32>(
+                memory_allocator.clone(),
+                BufferCreateInfo {
+                    usage: BufferUsage::TRANSFER_SRC,
+                    ..Default::default()
+                },
+                AllocationCreateInfo {
+                    memory_type_filter: MemoryTypeFilter::PREFER_HOST
+                        | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
+                    ..Default::default()
+                },
+                (new_capacity * 3) as u64,
+            )?);
+
+            self.d_buf_input_pts = Some(Buffer::new_slice::<f32>(
+                memory_allocator.clone(),
+                BufferCreateInfo {
+                    usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_DST,
+                    ..Default::default()
+                },
+                AllocationCreateInfo {
+                    memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
+                    ..Default::default()
+                },
+                (new_capacity * 3) as u64,
+            )?);
+
+            self.d_buf_keys = Buffer::new_slice::<u32>(
+                memory_allocator.clone(),
+                BufferCreateInfo {
+                    usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_DST,
+                    ..Default::default()
+                },
+                AllocationCreateInfo {
+                    memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
+                    ..Default::default()
+                },
+                new_table_size as u64,
+            )
+            .expect("Failed to create buf_keys buffer")
+            .into();
+
+            self.d_buf_centroids = Buffer::new_slice::<u32>(
+                memory_allocator.clone(),
+                BufferCreateInfo {
+                    usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_DST,
+                    ..Default::default()
+                },
+                AllocationCreateInfo {
+                    memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
+                    ..Default::default()
+                },
+                (new_table_size * 3) as u64,
+            )
+            .expect("Failed to create buf_centroids buffer")
+            .into();
+
+            self.d_buf_counts = Buffer::new_slice::<u32>(
+                memory_allocator.clone(),
+                BufferCreateInfo {
+                    usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_DST,
+                    ..Default::default()
+                },
+                AllocationCreateInfo {
+                    memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
+                    ..Default::default()
+                },
+                new_table_size as u64,
+            )
+            .expect("Failed to create buf_counts buffer")
+            .into();
+
+            self.d_buf_out_pts = Buffer::new_slice::<f32>(
+                memory_allocator.clone(),
+                BufferCreateInfo {
+                    usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_SRC,
+                    ..Default::default()
+                },
+                AllocationCreateInfo {
+                    memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
+                    ..Default::default()
+                },
+                (new_capacity * 3) as u64,
+            )
+            .expect("Failed to create buf_out_pts buffer")
+            .into();
+
+            self.d_buf_counter = Buffer::new_slice::<u32>(
+                memory_allocator.clone(),
+                BufferCreateInfo {
+                    usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_SRC,
+                    ..Default::default()
+                },
+                AllocationCreateInfo {
+                    memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
+                    ..Default::default()
+                },
+                1,
+            )
+            .expect("Failed to create buf_counter buffer")
+            .into();
+
+            self.staging_buf_output_pts = Some(
+                Buffer::new_slice(
+                    memory_allocator.clone(),
+                    BufferCreateInfo {
+                        usage: BufferUsage::TRANSFER_DST,
+                        ..Default::default()
+                    },
+                    AllocationCreateInfo {
+                        memory_type_filter: MemoryTypeFilter::PREFER_HOST
+                            | MemoryTypeFilter::HOST_RANDOM_ACCESS,
+                        ..Default::default()
+                    },
+                    (new_capacity * 3) as u64,
+                )
+                .expect("Failed to create staging_buf_output_pts buffer")
+                .into(),
+            );
+
+            self.staging_buf_output_counter = Some(Buffer::new_slice::<u32>(
+                memory_allocator.clone(),
+                BufferCreateInfo {
+                    usage: BufferUsage::TRANSFER_DST,
+                    ..Default::default()
+                },
+                AllocationCreateInfo {
+                    memory_type_filter: MemoryTypeFilter::PREFER_HOST
+                        | MemoryTypeFilter::HOST_RANDOM_ACCESS,
+                    ..Default::default()
+                },
+                1,
+                )
+                .expect("Failed to create staging_buf_output_counter buffer")
+                .into()
+            );
+        }
+
+        // let flattened_pts: Vec<f32> = pts.iter().flat_map(|arr| arr.iter().copied()).collect();
         // input points
-        let flattened_pts: Vec<f32> = pts.iter().flat_map(|arr| arr.iter().copied()).collect();
-        self.d_buf_input_pts = Buffer::from_iter(
-            memory_allocator.clone(),
-            BufferCreateInfo {
-                usage: BufferUsage::STORAGE_BUFFER,
-                ..Default::default()
-            },
-            AllocationCreateInfo {
-                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
-                    | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
-                ..Default::default()
-            },
-            flattened_pts,
-        )
-        .expect("Failed to create buf_pts buffer!")
-        .into();
-
-        self.d_buf_keys = Buffer::new_slice::<u32>(
-            memory_allocator.clone(),
-            BufferCreateInfo {
-                usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_DST,
-                ..Default::default()
-            },
-            AllocationCreateInfo {
-                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
-                ..Default::default()
-            },
-            table_size as u64,
-        )
-        .expect("Failed to create buf_keys buffer")
-        .into();
-
-        self.d_buf_centroids = Buffer::new_slice::<u32>(
-            memory_allocator.clone(),
-            BufferCreateInfo {
-                usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_DST,
-                ..Default::default()
-            },
-            AllocationCreateInfo {
-                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
-                ..Default::default()
-            },
-            (table_size * 3) as u64,
-        )
-        .expect("Failed to create buf_centroids buffer")
-        .into();
-
-        self.d_buf_counts = Buffer::new_slice::<u32>(
-            memory_allocator.clone(),
-            BufferCreateInfo {
-                usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_DST,
-                ..Default::default()
-            },
-            AllocationCreateInfo {
-                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
-                ..Default::default()
-            },
-            table_size as u64,
-        )
-        .expect("Failed to create buf_counts buffer")
-        .into();
-
-        self.d_buf_out_pts = Buffer::new_slice::<f32>(
-            memory_allocator.clone(),
-            BufferCreateInfo {
-                usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_SRC,
-                ..Default::default()
-            },
-            AllocationCreateInfo {
-                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
-                ..Default::default()
-            },
-            (num_pts * 3) as u64,
-        )
-        .expect("Failed to create buf_out_pts buffer")
-        .into();
-
-        self.d_buf_counter = Buffer::new_slice::<u32>(
-            memory_allocator.clone(),
-            BufferCreateInfo {
-                usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_SRC,
-                ..Default::default()
-            },
-            AllocationCreateInfo {
-                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
-                ..Default::default()
-            },
-            1,
-        )
-        .expect("Failed to create buf_counter buffer")
-        .into();
+        if let Some(staging_buf) = &self.staging_buf_input_pts {
+            let mut mapping = staging_buf.write()?;
+            for (i, pt) in pts.iter().enumerate() {
+                mapping[i * 3 + 0] = pt[0];
+                mapping[i * 3 + 1] = pt[1];
+                mapping[i * 3 + 2] = pt[2];
+            }
+        }
 
         let descriptor_set_init = DescriptorSet::new(
             descriptor_set_allocator.clone(),
@@ -342,6 +416,20 @@ impl VoxelGpuContext {
             CommandBufferUsage::OneTimeSubmit,
         )
         .unwrap();
+
+        let copy_src = self
+            .staging_buf_input_pts
+            .as_ref()
+            .unwrap()
+            .clone()
+            .slice(0..(num_pts * 3) as u64);
+        let copy_dst = self
+            .d_buf_input_pts
+            .as_ref()
+            .unwrap()
+            .clone()
+            .slice(0..(num_pts * 3) as u64);
+        command_buffer_builder.copy_buffer(CopyBufferInfo::buffers(copy_src, copy_dst))?;
 
         const LOCAL_SIZE: u32 = 256;
         let group_count_x = (table_size as u32 + LOCAL_SIZE - 1) / LOCAL_SIZE;
@@ -432,6 +520,24 @@ impl VoxelGpuContext {
             // }
         }
 
+        let copy_out_src = self
+            .d_buf_out_pts
+            .as_ref()
+            .unwrap()
+            .clone()
+            .slice(0..(num_pts * 3) as u64);
+        let copy_out_dst = self
+            .staging_buf_output_pts
+            .as_ref()
+            .unwrap()
+            .clone()
+            .slice(0..(num_pts * 3) as u64);
+        command_buffer_builder.copy_buffer(CopyBufferInfo::buffers(copy_out_src, copy_out_dst))?;
+        command_buffer_builder.copy_buffer(CopyBufferInfo::buffers(
+            self.d_buf_counter.as_ref().unwrap().clone(),
+            self.staging_buf_output_counter.as_ref().unwrap().clone(),
+        ))?;
+
         let command_buffer = command_buffer_builder.build().unwrap();
 
         let compute_start_time = Instant::now();
@@ -444,64 +550,16 @@ impl VoxelGpuContext {
         future.wait(None).unwrap();
 
         let compute_end_time = compute_start_time.elapsed();
-        println!("Compute voxelization shader execution time: {:?}", compute_end_time);
+        println!(
+            "Compute voxelization shader execution time: {:?}",
+            compute_end_time
+        );
 
-        let staging_out_pts = Buffer::new_slice::<f32>(
-            memory_allocator.clone(),
-            BufferCreateInfo {
-                usage: BufferUsage::TRANSFER_DST,
-                ..Default::default()
-            },
-            AllocationCreateInfo {
-                memory_type_filter: MemoryTypeFilter::PREFER_HOST
-                    | MemoryTypeFilter::HOST_RANDOM_ACCESS,
-                ..Default::default()
-            },
-            (num_pts * 3) as u64,
-        )?;
-
-        let staging_counter = Buffer::new_slice::<u32>(
-            memory_allocator.clone(),
-            BufferCreateInfo {
-                usage: BufferUsage::TRANSFER_DST,
-                ..Default::default()
-            },
-            AllocationCreateInfo {
-                memory_type_filter: MemoryTypeFilter::PREFER_HOST
-                    | MemoryTypeFilter::HOST_RANDOM_ACCESS,
-                ..Default::default()
-            },
-            1,
-        )?;
-
-        let mut copy_builder = AutoCommandBufferBuilder::primary(
-            command_buffer_allocator.clone(),
-            queue.queue_family_index().clone(),
-            CommandBufferUsage::OneTimeSubmit,
-        )?;
-
-        copy_builder.copy_buffer(CopyBufferInfo::buffers(
-            self.d_buf_out_pts.as_ref().unwrap().clone(),
-            staging_out_pts.clone(),
-        ))?;
-        copy_builder.copy_buffer(CopyBufferInfo::buffers(
-            self.d_buf_counter.as_ref().unwrap().clone(),
-            staging_counter.clone(),
-        ))?;
-
-        let copy_command_buffer = copy_builder.build()?;
-
-        let copy_future = sync::now(device.clone())
-            .then_execute(queue.clone(), copy_command_buffer)?
-            .then_signal_fence_and_flush()?;
-
-        copy_future.wait(None)?;
-
-        let counter_content = staging_counter.read()?;
+        let counter_content = self.staging_buf_output_counter.as_ref().unwrap().read()?;
         let num_output_points = counter_content[0] as usize;
         println!("Number of output points: {}", num_output_points);
 
-        let out_pts_content = staging_out_pts.read()?;
+        let out_pts_content = self.staging_buf_output_pts.as_ref().unwrap().read()?;
         let output_points: Vec<[f32; 3]> = out_pts_content
             .chunks_exact(3)
             .take(num_output_points)

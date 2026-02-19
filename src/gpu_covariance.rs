@@ -14,8 +14,10 @@ use vulkano::{
     sync::{self, GpuFuture},
 };
 
-use crate::{gpu_voxel::{PushConsts, VoxelGpuContext}, init_gpu::VulkanContext};
-
+use crate::{
+    gpu_voxel::{PushConsts, VoxelGpuContext},
+    init_gpu::VulkanContext,
+};
 
 pub struct CovarianceGpuContext {
     vulkan_context: VulkanContext,
@@ -26,6 +28,10 @@ pub struct CovarianceGpuContext {
 
     d_buf_input_pts: Option<Subbuffer<[f32]>>,
     d_buf_output_covs: Option<Subbuffer<[f32]>>,
+    
+    staging_buf_output_covs: Option<Subbuffer<[f32]>>,
+
+    pub current_capacity_pts: usize,
 }
 
 impl CovarianceGpuContext {
@@ -71,6 +77,8 @@ impl CovarianceGpuContext {
             descriptor_set_layout: descriptor_set_layout_covariance.clone(),
             d_buf_input_pts: None,
             d_buf_output_covs: None,
+            staging_buf_output_covs: None,
+            current_capacity_pts: 0,
         })
     }
 
@@ -79,7 +87,12 @@ impl CovarianceGpuContext {
         voxel_gpu_context: &VoxelGpuContext,
         pts: &[[f32; 3]],
         num_pts: usize,
+        only_compute_covs: bool,
     ) -> Result<Vec<[f32; 9]>> {
+        if num_pts == 0 {
+            return Ok(vec![[0.0; 9]; 0]);
+        }
+
         let device = &self.vulkan_context.device;
         let queue = &self.vulkan_context.queue;
         let memory_allocator = &self.vulkan_context.memory_allocator;
@@ -95,38 +108,63 @@ impl CovarianceGpuContext {
             _pad: 0,
         };
 
-        // input points
-        let flattened_pts: Vec<f32> = pts.iter().flat_map(|arr| arr.iter().copied()).collect();
-        self.d_buf_input_pts = Buffer::from_iter(
-            memory_allocator.clone(),
-            BufferCreateInfo {
-                usage: BufferUsage::STORAGE_BUFFER,
-                ..Default::default()
-            },
-            AllocationCreateInfo {
-                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
-                    | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
-                ..Default::default()
-            },
-            flattened_pts,
-        )
-        .expect("Failed to create buf_pts buffer!")
-        .into();
+        if self.current_capacity_pts < num_pts {
+            println!("Reallocating buffers for {} points", num_pts);
 
-        self.d_buf_output_covs = Buffer::new_slice::<f32>(
-            memory_allocator.clone(),
-            BufferCreateInfo {
-                usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_SRC,
-                ..Default::default()
-            },
-            AllocationCreateInfo {
-                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
-                ..Default::default()
-            },
-            (num_pts * 9) as u64,
-        )
-        .expect("Failed to create buf_out_pts buffer")
-        .into();
+            let new_capacity = (num_pts as f64 * 1.5) as usize;
+            self.current_capacity_pts = new_capacity;
+
+            self.d_buf_output_covs = Buffer::new_slice::<f32>(
+                memory_allocator.clone(),
+                BufferCreateInfo {
+                    usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_SRC,
+                    ..Default::default()
+                },
+                AllocationCreateInfo {
+                    memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
+                    ..Default::default()
+                },
+                (new_capacity * 9) as u64,
+            )
+            .expect("Failed to create buf_out_pts buffer")
+            .into();
+
+            self.staging_buf_output_covs = Some(
+                Buffer::new_slice::<f32>(
+                    memory_allocator.clone(),
+                    BufferCreateInfo {
+                        usage: BufferUsage::TRANSFER_DST,
+                        ..Default::default()
+                    },
+                    AllocationCreateInfo {
+                        memory_type_filter: MemoryTypeFilter::PREFER_HOST
+                            | MemoryTypeFilter::HOST_RANDOM_ACCESS,
+                        ..Default::default()
+                    },
+                    (new_capacity * 9) as u64,
+                )
+                .expect("Failed to create staging_buf_output_covs buffer")
+                .into()
+            );
+        }
+
+        // input points
+        // let flattened_pts: Vec<f32> = pts.iter().flat_map(|arr| arr.iter().copied()).collect();
+        // self.d_buf_input_pts = Buffer::from_iter(
+        //     memory_allocator.clone(),
+        //     BufferCreateInfo {
+        //         usage: BufferUsage::STORAGE_BUFFER,
+        //         ..Default::default()
+        //     },
+        //     AllocationCreateInfo {
+        //         memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
+        //             | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
+        //         ..Default::default()
+        //     },
+        //     flattened_pts,
+        // )
+        // .expect("Failed to create buf_pts buffer!")
+        // .into();
 
         let descriptor_set = DescriptorSet::new(
             descriptor_set_allocator.clone(),
@@ -134,7 +172,7 @@ impl CovarianceGpuContext {
             [
                 vulkano::descriptor_set::WriteDescriptorSet::buffer(
                     0,
-                    self.d_buf_input_pts.as_ref().unwrap().clone(),
+                    voxel_gpu_context.d_buf_out_pts.as_ref().unwrap().clone(),
                 ),
                 vulkano::descriptor_set::WriteDescriptorSet::buffer(
                     1,
@@ -211,24 +249,28 @@ impl CovarianceGpuContext {
             //         .write_timestamp(qp.clone(), 1, sync::PipelineStage::ComputeShader)
             //         .unwrap();
             // }
-            command_buffer_builder
-                .push_constants(pipeline_layout.clone(), 0, consts)
-                .unwrap()
-                .bind_descriptor_sets(
-                    vulkano::pipeline::PipelineBindPoint::Compute,
-                    pipeline_layout.clone(),
-                    0,
-                    descriptor_set.clone(),
-                )
-                .unwrap()
-                .dispatch(work_group_count)
-                .unwrap();
+            // command_buffer_builder
+            //     .push_constants(pipeline_layout.clone(), 0, consts)
+            //     .unwrap()
+            //     .bind_descriptor_sets(
+            //         vulkano::pipeline::PipelineBindPoint::Compute,
+            //         pipeline_layout.clone(),
+            //         0,
+            //         descriptor_set.clone(),
+            //     )
+            //     .unwrap()
+            //     .dispatch(work_group_count)
+            //     .unwrap();
             // if let Some(ref qp) = query_pool {
             //     command_buffer_builder
             //         .write_timestamp(qp.clone(), 2, sync::PipelineStage::ComputeShader)
             //         .unwrap();
             // }
         }
+
+        let copy_out_src = self.d_buf_output_covs.as_ref().unwrap().clone().slice(0..(num_pts * 9) as u64);
+        let copy_out_dst = self.staging_buf_output_covs.as_ref().unwrap().clone().slice(0..(num_pts * 9) as u64);
+        command_buffer_builder.copy_buffer(CopyBufferInfo::buffers(copy_out_src, copy_out_dst))?;
 
         let command_buffer = command_buffer_builder.build().unwrap();
 
@@ -242,42 +284,12 @@ impl CovarianceGpuContext {
         future.wait(None).unwrap();
 
         let compute_end_time = compute_start_time.elapsed();
-        println!("Compute covariance shader execution time: {:?}", compute_end_time);
+        println!(
+            "Compute covariance shader execution time: {:?}",
+            compute_end_time
+        );
 
-        let staging_out_covs = Buffer::new_slice::<f32>(
-            memory_allocator.clone(),
-            BufferCreateInfo {
-                usage: BufferUsage::TRANSFER_DST,
-                ..Default::default()
-            },
-            AllocationCreateInfo {
-                memory_type_filter: MemoryTypeFilter::PREFER_HOST
-                    | MemoryTypeFilter::HOST_RANDOM_ACCESS,
-                ..Default::default()
-            },
-            (num_pts * 9) as u64,
-        )?;
-
-        let mut copy_builder = AutoCommandBufferBuilder::primary(
-            command_buffer_allocator.clone(),
-            queue.queue_family_index().clone(),
-            CommandBufferUsage::OneTimeSubmit,
-        )?;
-
-        copy_builder.copy_buffer(CopyBufferInfo::buffers(
-            self.d_buf_output_covs.as_ref().unwrap().clone(),
-            staging_out_covs.clone(),
-        ))?;
-
-        let copy_command_buffer = copy_builder.build()?;
-
-        let copy_future = sync::now(device.clone())
-            .then_execute(queue.clone(), copy_command_buffer)?
-            .then_signal_fence_and_flush()?;
-
-        copy_future.wait(None)?;
-
-        let out_pts_covs_content = staging_out_covs.read()?;
+        let out_pts_covs_content = self.staging_buf_output_covs.as_ref().unwrap().read()?;
         let output_covs: Vec<[f32; 9]> = out_pts_covs_content
             .chunks_exact(9)
             .take(num_pts)

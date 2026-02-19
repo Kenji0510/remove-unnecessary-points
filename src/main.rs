@@ -25,7 +25,7 @@ use remove_unnecessary_points::{
 };
 
 const K_NEIGHBORS: usize = 20;
-const VOXEL_SIZE: f32 = 0.1;
+const VOXEL_SIZE: f32 = 0.05;
 const PLANARITY_THRESHOLD: f64 = 0.6;
 const LINEARITY_THRESHOLD: f64 = 0.5;
 const SCATTERING_THRESHOLD: f64 = 0.2;
@@ -126,10 +126,15 @@ fn main() -> Result<()> {
     // let num_points = pts_vec.len();
 
     // Compute covariances on GPU using the same downsampled points
-    let mut pts_covs =
-        gpu_covariance_ctx.compute_covariances(&gpu_voxel_ctx, &downsampled_pts, downsampled_pts.len())?;
+    let mut pts_covs = gpu_covariance_ctx.compute_covariances(
+        &gpu_voxel_ctx,
+        &downsampled_pts,
+        downsampled_pts.len(),
+        false,
+    )?;
 
-    for _ in 0..10 {        downsampled_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
+    for _ in 0..10 {
+        downsampled_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
         println!("GPU voxelization: {} points", downsampled_pts.len());
 
         // let pts_vec: Vec<[f32; 3]> = downsampled_pts
@@ -143,10 +148,14 @@ fn main() -> Result<()> {
         // let num_points = pts_vec.len();
 
         // Compute covariances on GPU using the same downsampled points
-        pts_covs =
-            gpu_covariance_ctx.compute_covariances(&gpu_voxel_ctx, &downsampled_pts, downsampled_pts.len())?;
+        pts_covs = gpu_covariance_ctx.compute_covariances(
+            &gpu_voxel_ctx,
+            &downsampled_pts,
+            downsampled_pts.len(),
+            false,
+        )?;
     }
-    
+
     // let pts_kdtree = kiddo::ImmutableKdTree::new_from_slice(&pts_vec);
     // let shape_feats = compute_shape_features(&downsampled_pts, &pts_kdtree, K_NEIGHBORS);
 

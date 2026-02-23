@@ -3,7 +3,6 @@ pub mod convert_2d_xy;
 pub mod gpu_clustering;
 pub mod gpu_covariance;
 pub mod gpu_voxel;
-pub mod gpu_voxel_temp;
 pub mod init_gpu;
 pub mod oprate_pcd;
 pub mod plot;

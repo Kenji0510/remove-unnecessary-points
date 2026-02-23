@@ -18,7 +18,6 @@ use remove_unnecessary_points::{
     gpu_clustering::ClusteringGpuContext,
     gpu_covariance::CovarianceGpuContext,
     gpu_voxel::VoxelGpuContext,
-    gpu_voxel_temp::voxelization,
     init_gpu::VulkanContext,
     oprate_pcd::{
         PointXYZ, PointXYZCovs, PointXYZWithShapeFeat, load_pcd_xyz, load_pcd_xyzrgb, save_pcd,
@@ -29,12 +28,12 @@ use remove_unnecessary_points::{
 };
 
 const K_NEIGHBORS: usize = 20;
-const VOXEL_SIZE: f32 = 0.1;
-const PLANARITY_THRESHOLD: f64 = 0.6;
-const LINEARITY_THRESHOLD: f64 = 0.5;
-const SCATTERING_THRESHOLD: f64 = 0.2;
+const VOXEL_SIZE: f32 = 0.05;
+const PLANARITY_THRESHOLD: f64 = 0.85;
+const LINEARITY_THRESHOLD: f64 = 0.85;
+const SCATTERING_THRESHOLD: f64 = 0.15;
 const NORMAL_Z_THRESHOLD: f64 = 0.85;
-const PCD_PATH: &str = "data/input/transformed-combined-frame-125.pcd";
+const PCD_PATH: &str = "data/input/20260210/box/transformed-combined-frame-180.pcd";
 const SAVE_ORIGINAL_PCD_PATH: &str = "data/output/voxelized-H927-hallway-01.pcd";
 const SAVE_REMOVED_PCD_PATH: &str =
     "data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxelized-0.2.pcd";
@@ -42,7 +41,7 @@ const MIN_Z: f32 = -0.5;
 const MAX_Z: f32 = 1.5;
 const MIN_Z_RANGE: f32 = 0.7;
 const MAX_Z_RANGE: f32 = 1.75;
-const NUMBERING: usize = 125;
+const NUMBERING: usize = 180;
 
 const DEBUG_ITERATIONS: usize = 9;
 
@@ -191,11 +190,14 @@ fn main() -> Result<()> {
         }
     }
 
+    let start = std::time::Instant::now();
     let shape_feats = compute_shape_features_02(&pts_covs);
 
     let pcd_with_shape_feats = convert_to_pcd_from_vec(&downsampled_pts, &shape_feats);
 
     let removed_pcd = remove_unnecessary_points_by_shape_feats(&pcd_with_shape_feats)?;
+    let elapsed = start.elapsed();
+    println!("Removed unnecessary points processing time: {:.2?}", elapsed);
 
     let elapsed = start.elapsed();
     debug!("=== Processing Result ===");

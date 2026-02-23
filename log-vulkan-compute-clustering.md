@@ -991,3 +991,251 @@
 [2026-02-23T10:09:14Z DEBUG remove_unnecessary_points] Downsampled points clustering time: 2.13ms
 [2026-02-23T10:09:14Z DEBUG remove_unnecessary_points] ====================
 ```
+
+# AGX Orin (64GB)
+```bash
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::init_gpu] === Available Vulkan Devices ===
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::init_gpu] Device 0: NVIDIA Tegra Orin (nvgpu) (IntegratedGpu)
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::init_gpu] Device 1: llvmpipe (LLVM 15.0.7, 128 bits) (Cpu)
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::init_gpu] 
+    
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::init_gpu] Selected device: NVIDIA Tegra Orin (nvgpu) (IntegratedGpu)
+    
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::init_gpu] === Vulkan Device Information ===
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::init_gpu] Device Name: NVIDIA Tegra Orin (nvgpu)
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::init_gpu] Device Type: IntegratedGpu
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::init_gpu] Vulkan context initialized successfully.
+    
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] === Parameters ===
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] Input PCD path: data/input/transformed-combined-frame-125.pcd
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] Loaded points: 79662
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] Voxel size: 0.05
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] MIN_Z: -0.5
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] MAX_Z: 1.5
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] MIN_Z_RANGE: 0.7
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] MAX_Z_RANGE: 1.75
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] K_NEIGHBORS: 20
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] PLANARITY_THRESHOLD: 0.6
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] LINEARITY_THRESHOLD: 0.5
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] SCATTERING_THRESHOLD: 0.2
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] NORMAL_Z_THRESHOLD: 0.85
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] DEBUG_ITERATIONS: 9
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] ====================
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Reallocating buffers for 79662 points
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.961265ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31434
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] GPU voxelization: 31434 points
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_covariance] Reallocating buffers for 31434 points
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 2.048814ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Reallocating buffers for 31434 points
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 26.26ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.167537ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31434
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] GPU voxelization: 31434 points
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 2.055662ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 25.69ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.180785ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31434
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] GPU voxelization: 31434 points
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 2.072013ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 25.78ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 886.013µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31434
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] GPU voxelization: 31434 points
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.327339ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 19.62ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 755.394µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31434
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] GPU voxelization: 31434 points
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.485477ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 10.24ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 650.694µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31434
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] GPU voxelization: 31434 points
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.024983ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 9.91ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 644.711µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31434
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] GPU voxelization: 31434 points
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.029719ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 9.69ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 640.743µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31434
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] GPU voxelization: 31434 points
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.039127ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 9.83ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 642.407µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31434
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] GPU voxelization: 31434 points
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.062198ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 13.62ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 918.428µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31434
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] GPU voxelization: 31434 points
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.641311ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 14.83ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] === Processing Result ===
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] After processed points: 1823
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] Processing time: 316.88ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.062678ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1822
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.68ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 319.507µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1822
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.65ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 316.82µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1822
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.66ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 309.172µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1822
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.70ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 305.268µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1822
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.70ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 309.267µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1822
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.68ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 305.427µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1822
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.61ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 309.044µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1822
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.70ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 305.459µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1822
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.69ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] Saved colored clusters to data/output/clustering_results/downsampled-clustering-results_voxel-0.05_NUM-125.pcd
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] === Average GPU Processing Time (excluding first 3 iterations) ===
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] Raw points voxelization time: 1.43ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] Raw points covariance time: 1.64ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] Raw points clustering time: 11.73ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] Downsampled points voxelization time: 652.46µs
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] Downsampled points clustering time: 4.95ms
+[2026-02-23T10:37:21Z DEBUG remove_unnecessary_points] ====================
+[2026-02-23T10:37:22Z DEBUG remove_unnecessary_points] Saved removed unnecessary points pcd to data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxel-0.05_NUM-125.pcd
+[2026-02-23T10:37:22Z DEBUG remove_unnecessary_points] Saved voxelized pcd with shape features to data/output/2d-xy/convert-2d-pts-by-covariance/original-by-shape-feats_voxel-0.05_NUM-125.pcd
+
+
+
+
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::init_gpu] === Available Vulkan Devices ===
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::init_gpu] Device 0: NVIDIA Tegra Orin (nvgpu) (IntegratedGpu)
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::init_gpu] Device 1: llvmpipe (LLVM 15.0.7, 128 bits) (Cpu)
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::init_gpu] 
+    
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::init_gpu] Selected device: NVIDIA Tegra Orin (nvgpu) (IntegratedGpu)
+    
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::init_gpu] === Vulkan Device Information ===
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::init_gpu] Device Name: NVIDIA Tegra Orin (nvgpu)
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::init_gpu] Device Type: IntegratedGpu
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::init_gpu] Vulkan context initialized successfully.
+    
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] === Parameters ===
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] Input PCD path: data/input/transformed-combined-frame-125.pcd
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] Loaded points: 79662
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] Voxel size: 0.1
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] MIN_Z: -0.5
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] MAX_Z: 1.5
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] MIN_Z_RANGE: 0.7
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] MAX_Z_RANGE: 1.75
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] K_NEIGHBORS: 20
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] PLANARITY_THRESHOLD: 0.6
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] LINEARITY_THRESHOLD: 0.5
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] SCATTERING_THRESHOLD: 0.2
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] NORMAL_Z_THRESHOLD: 0.85
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] DEBUG_ITERATIONS: 9
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] ====================
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Reallocating buffers for 79662 points
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.862097ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 12729
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] GPU voxelization: 12729 points
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_covariance] Reallocating buffers for 12729 points
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.170415ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Reallocating buffers for 12729 points
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 10.67ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.053875ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 12729
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] GPU voxelization: 12729 points
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.133583ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 10.62ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.079154ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 12729
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] GPU voxelization: 12729 points
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.143471ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 10.71ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.073842ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 12729
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] GPU voxelization: 12729 points
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.139823ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 10.76ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.088754ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 12729
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] GPU voxelization: 12729 points
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.149488ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 10.72ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.120816ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 12729
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] GPU voxelization: 12729 points
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.153487ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 10.77ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.098194ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 12729
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] GPU voxelization: 12729 points
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.160431ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 10.88ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.114865ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 12729
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] GPU voxelization: 12729 points
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.193229ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 10.75ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.107952ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 12729
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] GPU voxelization: 12729 points
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.206605ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 10.79ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.138671ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 12729
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] GPU voxelization: 12729 points
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.182029ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 10.71ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] === Processing Result ===
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] After processed points: 1519
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] Processing time: 218.44ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.029428ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1518
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.47ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 311.475µs
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1518
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.49ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 312.435µs
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1518
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.57ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 294.068µs
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1518
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.57ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 293.363µs
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1518
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.50ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 296.371µs
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1518
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.77ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 291.06µs
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1518
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.51ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 288.5µs
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1518
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.57ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 300.468µs
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 1518
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.54ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] Saved colored clusters to data/output/clustering_results/downsampled-clustering-results_voxel-0.1_NUM-125.pcd
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] === Average GPU Processing Time (excluding first 3 iterations) ===
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] Raw points voxelization time: 1.74ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] Raw points covariance time: 1.45ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] Raw points clustering time: 11.11ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] Downsampled points voxelization time: 621.12µs
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] Downsampled points clustering time: 4.87ms
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] ====================
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] Saved removed unnecessary points pcd to data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxel-0.1_NUM-125.pcd
+[2026-02-23T10:36:23Z DEBUG remove_unnecessary_points] Saved voxelized pcd with shape features to data/output/2d-xy/convert-2d-pts-by-covariance/original-by-shape-feats_voxel-0.1_NUM-125.pcd
+```

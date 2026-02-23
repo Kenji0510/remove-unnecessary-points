@@ -29,6 +29,7 @@ const VOXEL_SIZE: f32 = 0.05;
 const PLANARITY_THRESHOLD: f64 = 0.6;
 const LINEARITY_THRESHOLD: f64 = 0.5;
 const SCATTERING_THRESHOLD: f64 = 0.2;
+const NORMAL_Z_THRESHOLD: f64 = 0.85;
 const PCD_PATH: &str = "data/input/transformed-combined-frame-125.pcd";
 const SAVE_ORIGINAL_PCD_PATH: &str = "data/output/voxelized-H927-hallway-01.pcd";
 const SAVE_REMOVED_PCD_PATH: &str =
@@ -183,6 +184,12 @@ fn remove_unnecessary_points_by_shape_feats(
     let removed_pts: Vec<PointXYZWithShapeFeat> = pcd_with_shape_feats
         .iter()
         .filter(|p| {
+            let is_horizontal = p.normal_z.abs() > NORMAL_Z_THRESHOLD;
+
+            if is_horizontal {
+                return false;
+            }
+
             !((p.planarity as f64) > PLANARITY_THRESHOLD
                 || (p.scattering as f64) < SCATTERING_THRESHOLD)
         })
@@ -275,6 +282,7 @@ fn convert_to_pcd_from_vec(
             l1: shape_feat.l1,
             l2: shape_feat.l2,
             l3: shape_feat.l3,
+            normal_z: shape_feat.normal_z,
         };
         pcd.push(point);
     }
@@ -302,6 +310,7 @@ pub struct ShapeFeat {
     pub l1: f64,
     pub l2: f64,
     pub l3: f64,
+    pub normal_z: f64,
 }
 
 fn sort_desc3(mut a: f64, mut b: f64, mut c: f64) -> (f64, f64, f64) {
@@ -340,6 +349,7 @@ pub fn compute_shape_features(
                     l1: 0.0,
                     l2: 0.0,
                     l3: 0.0,
+                    normal_z: 0.0,
                 };
             }
 
@@ -389,6 +399,7 @@ pub fn compute_shape_features(
                 l1,
                 l2,
                 l3,
+                normal_z: eigen.eigenvectors.column(2).z,
             }
         })
         .collect();
@@ -434,6 +445,7 @@ pub fn compute_shape_features_02(covs: &Vec<[f32; 9]>) -> Vec<ShapeFeat> {
             l1,
             l2,
             l3,
+            normal_z: eigen.eigenvectors.column(2).z,
         });
     }
 

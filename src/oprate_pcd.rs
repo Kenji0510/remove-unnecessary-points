@@ -35,6 +35,7 @@ pub struct PointXYZWithShapeFeat {
     pub l1: f64,
     pub l2: f64,
     pub l3: f64,
+    pub normal_z: f64,
 }
 
 #[derive(Debug, Clone, PcdDeserialize, PcdSerialize)]

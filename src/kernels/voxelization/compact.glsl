@@ -19,6 +19,8 @@ layout(set = 0, binding = 2) buffer TableCentroids { uint table_centroids[]; };
 layout(set = 0, binding = 3) buffer TableCounts { uint table_counts[]; };
 layout(set = 0, binding = 4) buffer OutputPoints { float out_points[]; };
 layout(set = 0, binding = 5) buffer OutputCount  { uint out_count; };
+layout(set = 0, binding = 6) buffer TableVoxelIndices { uint table_voxel_indices[]; };
+layout(set = 0, binding = 7) buffer ClusterIDs { uint cluster_ids[]; };
 
 
 shared uint s_group_valid_count;
@@ -76,6 +78,9 @@ void main() {
         out_points[w_idx * 3 + 0] = sx;
         out_points[w_idx * 3 + 1] = sy;
         out_points[w_idx * 3 + 2] = sz;
+
+        table_voxel_indices[idx] = w_idx;
+        cluster_ids[w_idx] = w_idx;
     }
 }
     

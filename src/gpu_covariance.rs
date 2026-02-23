@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use anyhow::{Context, Result};
+use log::debug;
 use vulkano::{
     buffer::{Buffer, BufferCreateInfo, BufferUsage, Subbuffer},
     command_buffer::{AutoCommandBufferBuilder, CommandBufferUsage, CopyBufferInfo},
@@ -113,7 +114,7 @@ impl CovarianceGpuContext {
         };
 
         if self.current_capacity_pts < num_pts {
-            println!("Reallocating buffers for {} points", num_pts);
+            debug!("Reallocating buffers for {} points", num_pts);
 
             let new_capacity = (num_pts as f64 * 1.5) as usize;
             self.current_capacity_pts = new_capacity;
@@ -271,7 +272,7 @@ impl CovarianceGpuContext {
         future.wait(None).context("Failed to wait for future")?;
 
         let compute_end_time = compute_start_time.elapsed();
-        println!(
+        debug!(
             "Compute covariance shader execution time: {:?}",
             compute_end_time
         );

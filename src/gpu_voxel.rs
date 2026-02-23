@@ -1,5 +1,6 @@
 use anyhow::{Context, Result};
 use core::num;
+use log::debug;
 use std::{sync::Arc, time::Instant};
 use vulkano::{
     buffer::{Buffer, BufferCreateInfo, BufferUsage, Subbuffer},
@@ -48,6 +49,8 @@ pub struct VoxelGpuContext {
     pub d_buf_counts: Option<Subbuffer<[u32]>>,
     pub d_buf_out_pts: Option<Subbuffer<[f32]>>,
     pub d_buf_counter: Option<Subbuffer<[u32]>>,
+    pub d_buf_table_voxel_indices: Option<Subbuffer<[u32]>>,
+    pub d_buf_cluster_ids: Option<Subbuffer<[u32]>>,
 
     staging_buf_input_pts: Option<Subbuffer<[f32]>>,
     staging_buf_output_pts: Option<Subbuffer<[f32]>>,
@@ -192,6 +195,8 @@ impl VoxelGpuContext {
             num_points: 0,
             table_size: 0,
             voxel_size: 0.0,
+            d_buf_table_voxel_indices: None,
+            d_buf_cluster_ids: None,
         })
     }
 
@@ -229,7 +234,7 @@ impl VoxelGpuContext {
         };
 
         if self.current_capacity_pts < num_pts {
-            println!("Reallocating buffers for {} points", num_pts);
+            debug!("Reallocating buffers for {} points", num_pts);
 
             let new_capacity = (num_pts as f64 * 1.5) as usize;
             self.current_capacity_pts = new_capacity;
@@ -328,6 +333,32 @@ impl VoxelGpuContext {
                 1,
             )?);
 
+            self.d_buf_table_voxel_indices = Some(Buffer::new_slice::<u32>(
+                memory_allocator.clone(),
+                BufferCreateInfo {
+                    usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_SRC,
+                    ..Default::default()
+                },
+                AllocationCreateInfo {
+                    memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
+                    ..Default::default()
+                },
+                new_table_size as u64,
+            )?);
+
+            self.d_buf_cluster_ids = Some(Buffer::new_slice::<u32>(
+                memory_allocator.clone(),
+                BufferCreateInfo {
+                    usage: BufferUsage::STORAGE_BUFFER | BufferUsage::TRANSFER_SRC,
+                    ..Default::default()
+                },
+                AllocationCreateInfo {
+                    memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
+                    ..Default::default()
+                },
+                new_table_size as u64,
+            )?);
+
             self.staging_buf_output_pts = Some(Buffer::new_slice::<f32>(
                 memory_allocator.clone(),
                 BufferCreateInfo {
@@ -400,6 +431,20 @@ impl VoxelGpuContext {
                         .context("d_buf_counter is None")?
                         .clone(),
                 ),
+                WriteDescriptorSet::buffer(
+                    6,
+                    self.d_buf_table_voxel_indices
+                        .as_ref()
+                        .context("d_buf_table_voxel_indices is None")?
+                        .clone(),
+                ),
+                // WriteDescriptorSet::buffer(
+                //     7,
+                //     self.d_buf_cluster_ids
+                //         .as_ref()
+                //         .context("d_buf_cluster_ids is None")?
+                //         .clone(),
+                // ),
             ],
             [],
         )
@@ -482,6 +527,20 @@ impl VoxelGpuContext {
                     self.d_buf_counter
                         .as_ref()
                         .context("d_buf_counter is None")?
+                        .clone(),
+                ),
+                WriteDescriptorSet::buffer(
+                    6,
+                    self.d_buf_table_voxel_indices
+                        .as_ref()
+                        .context("d_buf_table_voxel_indices is None")?
+                        .clone(),
+                ),
+                WriteDescriptorSet::buffer(
+                    7,
+                    self.d_buf_cluster_ids
+                        .as_ref()
+                        .context("d_buf_cluster_ids is None")?
                         .clone(),
                 ),
             ],
@@ -602,7 +661,7 @@ impl VoxelGpuContext {
         future.wait(None)?;
 
         let compute_end_time = compute_start_time.elapsed();
-        println!(
+        debug!(
             "Compute voxelization shader execution time: {:?}",
             compute_end_time
         );
@@ -613,7 +672,7 @@ impl VoxelGpuContext {
             .context("staging_buf_output_counter is None")?
             .read()?;
         let num_output_points = counter_content[0] as usize;
-        println!("Number of output points: {}", num_output_points);
+        debug!("Number of output points: {}", num_output_points);
 
         let out_pts_content = self
             .staging_buf_output_pts

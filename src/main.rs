@@ -3,15 +3,19 @@ use std::{
     collections::HashMap,
     f32::{INFINITY, NEG_INFINITY},
     num::{NonZero, NonZeroUsize},
+    os::unix::process,
     sync::Arc,
 };
 
 use anyhow::{Context, Result};
+use log::debug;
 use nalgebra::{Matrix3, SymmetricEigen, Vector3};
 use ndarray::Array2;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use remove_unnecessary_points::{
+    clustering::extract_human_clusters,
     convert_2d_xy::{CellStats, project_to_xy_grid},
+    gpu_clustering::ClusteringGpuContext,
     gpu_covariance::CovarianceGpuContext,
     gpu_voxel::VoxelGpuContext,
     gpu_voxel_temp::voxelization,
@@ -25,7 +29,7 @@ use remove_unnecessary_points::{
 };
 
 const K_NEIGHBORS: usize = 20;
-const VOXEL_SIZE: f32 = 0.05;
+const VOXEL_SIZE: f32 = 0.1;
 const PLANARITY_THRESHOLD: f64 = 0.6;
 const LINEARITY_THRESHOLD: f64 = 0.5;
 const SCATTERING_THRESHOLD: f64 = 0.2;
@@ -40,29 +44,61 @@ const MIN_Z_RANGE: f32 = 0.7;
 const MAX_Z_RANGE: f32 = 1.75;
 const NUMBERING: usize = 125;
 
+const DEBUG_ITERATIONS: usize = 9;
+
+struct ProcessTime {
+    voxelization_time: std::time::Duration,
+    covariance_time: std::time::Duration,
+    clustering_time: std::time::Duration,
+}
+
+struct ProcessTimeResults {
+    raw_processing_time: ProcessTime,
+    downsampled_processing_time: ProcessTime,
+}
+
 fn main() -> Result<()> {
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("debug")).init();
+
     let vulkan_context = VulkanContext::new().context("Failed to initialize Vulkan context")?;
     let mut gpu_voxel_ctx = VoxelGpuContext::new(vulkan_context.clone())
         .context("Failed to create GPU voxel context")?;
     let mut gpu_covariance_ctx = CovarianceGpuContext::new(vulkan_context.clone())
         .context("Failed to create GPU covariance context")?;
+    let mut gpu_clustering_ctx = ClusteringGpuContext::new(vulkan_context.clone())
+        .context("Failed to create GPU clustering context")?;
 
     let pcd = load_pcd_xyz(PCD_PATH).context("Failed to load the pcd")?;
     // let pcd = load_pcd_xyzrgb(PCD_PATH).context("Failed to load the pcd")?;
 
-    println!("=== Parameters ===");
-    println!("Input PCD path: {}", PCD_PATH);
-    println!("Loaded points: {}", pcd.len());
-    println!("Voxel size: {}", VOXEL_SIZE);
-    println!("MIN_Z: {}", MIN_Z);
-    println!("MAX_Z: {}", MAX_Z);
-    println!("MIN_Z_RANGE: {}", MIN_Z_RANGE);
-    println!("MAX_Z_RANGE: {}", MAX_Z_RANGE);
-    println!("K_NEIGHBORS: {}", K_NEIGHBORS);
-    println!("PLANARITY_THRESHOLD: {}", PLANARITY_THRESHOLD);
-    println!("LINEARITY_THRESHOLD: {}", LINEARITY_THRESHOLD);
-    println!("SCATTERING_THRESHOLD: {}", SCATTERING_THRESHOLD);
-    println!("====================");
+    debug!("=== Parameters ===");
+    debug!("Input PCD path: {}", PCD_PATH);
+    debug!("Loaded points: {}", pcd.len());
+    debug!("Voxel size: {}", VOXEL_SIZE);
+    debug!("MIN_Z: {}", MIN_Z);
+    debug!("MAX_Z: {}", MAX_Z);
+    debug!("MIN_Z_RANGE: {}", MIN_Z_RANGE);
+    debug!("MAX_Z_RANGE: {}", MAX_Z_RANGE);
+    debug!("K_NEIGHBORS: {}", K_NEIGHBORS);
+    debug!("PLANARITY_THRESHOLD: {}", PLANARITY_THRESHOLD);
+    debug!("LINEARITY_THRESHOLD: {}", LINEARITY_THRESHOLD);
+    debug!("SCATTERING_THRESHOLD: {}", SCATTERING_THRESHOLD);
+    debug!("NORMAL_Z_THRESHOLD: {}", NORMAL_Z_THRESHOLD);
+    debug!("DEBUG_ITERATIONS: {}", DEBUG_ITERATIONS);
+    debug!("====================");
+
+    let mut process_time_results = ProcessTimeResults {
+        raw_processing_time: ProcessTime {
+            voxelization_time: std::time::Duration::ZERO,
+            covariance_time: std::time::Duration::ZERO,
+            clustering_time: std::time::Duration::ZERO,
+        },
+        downsampled_processing_time: ProcessTime {
+            voxelization_time: std::time::Duration::ZERO,
+            covariance_time: std::time::Duration::ZERO,
+            clustering_time: std::time::Duration::ZERO,
+        },
+    };
 
     let start = std::time::Instant::now();
 
@@ -103,7 +139,7 @@ fn main() -> Result<()> {
 
     let pts_vec = pcd_to_vecf32(&processed_pcd);
     let mut downsampled_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
-    println!("GPU voxelization: {} points", downsampled_pts.len());
+    debug!("GPU voxelization: {} points", downsampled_pts.len());
 
     // Compute covariances on GPU using the same downsampled points
     let mut pts_covs = gpu_covariance_ctx.compute_covariances(
@@ -113,17 +149,46 @@ fn main() -> Result<()> {
         false,
     )?;
 
-    for _ in 0..10 {
+    // Compute clustering on GPU using the same downsampled points
+    let cluster_ids = gpu_clustering_ctx.clustering(
+        &gpu_voxel_ctx,
+        &downsampled_pts,
+        downsampled_pts.len(),
+        VOXEL_SIZE,
+    )?;
+
+    for i in 0..DEBUG_ITERATIONS {
+        let start = std::time::Instant::now();
         downsampled_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
-        println!("GPU voxelization: {} points", downsampled_pts.len());
+        let voxelization_elapsed = start.elapsed();
+
+        debug!("GPU voxelization: {} points", downsampled_pts.len());
 
         // Compute covariances on GPU using the same downsampled points
+        let start = std::time::Instant::now();
         pts_covs = gpu_covariance_ctx.compute_covariances(
             &gpu_voxel_ctx,
             &downsampled_pts,
             downsampled_pts.len(),
             false,
         )?;
+        let covariance_elapsed = start.elapsed();
+
+        // Compute clustering on GPU using the same downsampled points
+        let start = std::time::Instant::now();
+        let cluster_ids = gpu_clustering_ctx.clustering(
+            &gpu_voxel_ctx,
+            &downsampled_pts,
+            downsampled_pts.len(),
+            VOXEL_SIZE,
+        )?;
+        let clustering_elapsed = start.elapsed();
+
+        if i > 2 {
+            process_time_results.raw_processing_time.covariance_time += covariance_elapsed;
+            process_time_results.raw_processing_time.voxelization_time += voxelization_elapsed;
+            process_time_results.raw_processing_time.clustering_time += clustering_elapsed;
+        }
     }
 
     let shape_feats = compute_shape_features_02(&pts_covs);
@@ -133,16 +198,86 @@ fn main() -> Result<()> {
     let removed_pcd = remove_unnecessary_points_by_shape_feats(&pcd_with_shape_feats)?;
 
     let elapsed = start.elapsed();
-    println!("=== Processing Result ===");
-    println!("After processed points: {}", removed_pcd.len());
-    println!("Processing time: {:.2?}", elapsed);
+    debug!("=== Processing Result ===");
+    debug!("After processed points: {}", removed_pcd.len());
+    debug!("Processing time: {:.2?}", elapsed);
+
+    for i in 0..DEBUG_ITERATIONS {
+        // <!--- DEBUG ---> //
+        let pts_vec = pcd_shapefeat_to_vecf32(&removed_pcd);
+        let start = std::time::Instant::now();
+        let downsampled_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
+        let voxelization_elapsed = start.elapsed();
+
+        // Compute clustering on GPU using the same downsampled points
+        let start = std::time::Instant::now();
+        let cluster_ids = gpu_clustering_ctx.clustering(
+            &gpu_voxel_ctx,
+            &downsampled_pts,
+            downsampled_pts.len(),
+            VOXEL_SIZE,
+        )?;
+        let clustering_elapsed = start.elapsed();
+
+        if i > 2 {
+            process_time_results
+                .downsampled_processing_time
+                .voxelization_time += voxelization_elapsed;
+            process_time_results
+                .downsampled_processing_time
+                .clustering_time += clustering_elapsed;
+        }
+
+        if i == DEBUG_ITERATIONS - 1 {
+            let clustering_results_save_path = format!(
+                "data/output/clustering_results/downsampled-clustering-results_voxel-{}_NUM-{}.pcd",
+                VOXEL_SIZE, NUMBERING
+            );
+            save_colored_clusters_pcd(
+                &clustering_results_save_path,
+                &downsampled_pts,
+                &cluster_ids,
+            )?;
+            debug!("Saved colored clusters to {}", clustering_results_save_path);
+        }
+        // <!--- DEBUG ---> //
+    }
+
+    debug!("=== Average GPU Processing Time (excluding first 3 iterations) ===");
+    debug!(
+        "Raw points voxelization time: {:.2?}",
+        process_time_results.raw_processing_time.voxelization_time / (DEBUG_ITERATIONS as u32 - 3)
+    );
+    debug!(
+        "Raw points covariance time: {:.2?}",
+        process_time_results.raw_processing_time.covariance_time / (DEBUG_ITERATIONS as u32 - 3)
+    );
+    debug!(
+        "Raw points clustering time: {:.2?}",
+        process_time_results.raw_processing_time.clustering_time / (DEBUG_ITERATIONS as u32 - 3)
+    );
+    debug!(
+        "Downsampled points voxelization time: {:.2?}",
+        process_time_results
+            .downsampled_processing_time
+            .voxelization_time
+            / (DEBUG_ITERATIONS as u32 - 3)
+    );
+    debug!(
+        "Downsampled points clustering time: {:.2?}",
+        process_time_results
+            .downsampled_processing_time
+            .clustering_time
+            / (DEBUG_ITERATIONS as u32 - 3)
+    );
+    debug!("====================");
 
     let save_removed_pcd_path = format!(
         "data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxel-{}_NUM-{}.pcd",
         VOXEL_SIZE, NUMBERING
     );
     save_pcd_with_shape_feats(&removed_pcd, &save_removed_pcd_path)?;
-    println!(
+    debug!(
         "Saved removed unnecessary points pcd to {}",
         save_removed_pcd_path
     );
@@ -152,12 +287,82 @@ fn main() -> Result<()> {
         VOXEL_SIZE, NUMBERING
     );
     save_pcd_with_shape_feats(&pcd_with_shape_feats, &save_original_pcd_path)?;
-    println!(
+    debug!(
         "Saved voxelized pcd with shape features to {}",
         save_original_pcd_path
     );
 
     Ok(())
+}
+
+fn id_to_rgb_float(id: u32) -> f32 {
+    let h = ((id as f32) * 137.508) % 360.0;
+    let s = 0.85; // 彩度
+    let v = 0.95; // 明度
+
+    let c = v * s;
+    let x = c * (1.0 - ((h / 60.0) % 2.0 - 1.0).abs());
+    let m = v - c;
+
+    let (r, g, b) = if h < 60.0 {
+        (c, x, 0.0)
+    } else if h < 120.0 {
+        (x, c, 0.0)
+    } else if h < 180.0 {
+        (0.0, c, x)
+    } else if h < 240.0 {
+        (0.0, x, c)
+    } else if h < 300.0 {
+        (x, 0.0, c)
+    } else {
+        (c, 0.0, x)
+    };
+
+    let r_u8 = ((r + m) * 255.0) as u32;
+    let g_u8 = ((g + m) * 255.0) as u32;
+    let b_u8 = ((b + m) * 255.0) as u32;
+
+    let rgb_u32 = (r_u8 << 16) | (g_u8 << 8) | b_u8;
+    f32::from_bits(rgb_u32)
+}
+
+pub fn save_colored_clusters_pcd(
+    path: &str,
+    pts: &[[f32; 3]],
+    cluster_ids: &[u32],
+) -> anyhow::Result<()> {
+    use std::io::Write;
+    let mut file = std::fs::File::create(path)?;
+
+    writeln!(file, "# .PCD v0.7 - Point Cloud Data file format")?;
+    writeln!(file, "VERSION 0.7")?;
+    writeln!(file, "FIELDS x y z rgb")?;
+    writeln!(file, "SIZE 4 4 4 4")?;
+    writeln!(file, "TYPE F F F F")?;
+    writeln!(file, "COUNT 1 1 1 1")?;
+    writeln!(file, "WIDTH {}", pts.len())?;
+    writeln!(file, "HEIGHT 1")?;
+    writeln!(file, "VIEWPOINT 0 0 0 1 0 0 0")?;
+    writeln!(file, "POINTS {}", pts.len())?;
+    writeln!(file, "DATA ascii")?;
+
+    for i in 0..pts.len() {
+        let rgb_f32 = id_to_rgb_float(cluster_ids[i]);
+        writeln!(
+            file,
+            "{} {} {} {}",
+            pts[i][0], pts[i][1], pts[i][2], rgb_f32
+        )?;
+    }
+
+    Ok(())
+}
+
+fn pcd_shapefeat_to_vecf32(points: &[PointXYZWithShapeFeat]) -> Vec<[f32; 3]> {
+    points
+        .iter()
+        .map(|p| [p.x as f32, p.y as f32, p.z as f32])
+        .collect()
 }
 
 fn pcd_to_vecf32(points: &[PointXYZ]) -> Vec<[f32; 3]> {

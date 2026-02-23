@@ -1,4 +1,5 @@
 use anyhow::Result;
+use log::{debug, info};
 use std::sync::Arc;
 
 use vulkano::{
@@ -60,16 +61,17 @@ impl VulkanContext {
             anyhow::bail!("No Vulkan devices available");
         }
 
-        println!("\n=== Available Vulkan Devices ===");
+        // println!("\n=== Available Vulkan Devices ===");
+        debug!("=== Available Vulkan Devices ===");
         for (i, device) in available_devices.iter().enumerate() {
-            println!(
+            debug!(
                 "Device {}: {} ({:?})",
                 i,
                 device.properties().device_name,
                 device.properties().device_type
             );
         }
-        println!();
+        debug!("\n");
 
         // Select the best GPU device - prioritize discrete GPU
         let physical_device = available_devices
@@ -95,7 +97,7 @@ impl VulkanContext {
             .unwrap_or(&available_devices[0])
             .clone();
 
-        println!(
+        debug!(
             "Selected device: {} ({:?})\n",
             physical_device.properties().device_name,
             physical_device.properties().device_type
@@ -115,14 +117,14 @@ impl VulkanContext {
 
         let supported_extensions = physical_device.supported_extensions();
         if !supported_extensions.ext_shader_atomic_float {
-            eprintln!("Warning: Device does not support ext_shader_atomic_float extension.");
-            eprintln!("Using fallback implementation with integer atomics.");
+            info!("Warning: Device does not support ext_shader_atomic_float extension.");
+            info!("Using fallback implementation with integer atomics.");
         }
 
         let features = physical_device.supported_features();
         if !features.shader_buffer_float32_atomic_add {
-            eprintln!("Warning: Device does not support float32 atomic add feature.");
-            eprintln!("Using fallback implementation with integer atomics.");
+            info!("Warning: Device does not support float32 atomic add feature.");
+            info!("Using fallback implementation with integer atomics.");
         }
 
         // if !features.shader_shared_float32_atomic_add {
@@ -166,13 +168,14 @@ impl VulkanContext {
             Default::default(),
         ));
 
-        println!("=== Vulkan Device Information ===");
-        println!("Device Name: {}", physical_device.properties().device_name);
-        println!(
+        // println!("=== Vulkan Device Information ===");
+        debug!("=== Vulkan Device Information ===");
+        debug!("Device Name: {}", physical_device.properties().device_name);
+        debug!(
             "Device Type: {:?}",
             physical_device.properties().device_type
         );
-        println!("Vulkan context initialized successfully.\n");
+        debug!("Vulkan context initialized successfully.\n");
 
         Ok(VulkanContext {
             device,

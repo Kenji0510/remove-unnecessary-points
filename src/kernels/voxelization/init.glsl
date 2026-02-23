@@ -22,6 +22,8 @@ layout(set = 0, binding = 1) buffer TableKeys   { uint table_keys[]; };
 layout(set = 0, binding = 2) buffer TableCentroids { uint table_centroids[]; };
 layout(set = 0, binding = 3) buffer TableCounts { uint table_counts[]; };
 layout(set = 0, binding = 5) buffer OutputCount  { uint out_count; };
+layout(set = 0, binding = 6) buffer TableVoxelIndices { uint table_voxel_indices[]; };
+// layout(set = 0, binding = 7) buffer ClusterIDs { uint cluster_ids[]; };
 
 void main() {
     uint idx = gl_GlobalInvocationID.x;
@@ -35,6 +37,8 @@ void main() {
     table_centroids[3 * idx + 0] = 0u;
     table_centroids[3 * idx + 1] = 0u;
     table_centroids[3 * idx + 2] = 0u;
+
+    table_voxel_indices[idx] = EMPTY_KEY;
 
     if (idx == 0) {
         out_count = 0;

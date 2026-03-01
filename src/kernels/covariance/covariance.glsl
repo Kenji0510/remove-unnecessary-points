@@ -2,7 +2,7 @@
 
 layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 
-#define K 20
+#define K 25
 const float FLT_MAX = 3.402823466e+38;
 const uint EMPTY_KEY = 0xFFFFFFFF;
 const uint GLOBAL_PROBE = 1000;
@@ -259,8 +259,16 @@ void main() {
     if (evals[1] < evals[min_idx]) min_idx = 1;
     if (evals[2] < evals[min_idx]) min_idx = 2;
 
-    // Use actual eigenvalues instead of regularizing to 1.0
-    float reg_evals[3] = float[](evals[0], evals[1], evals[2]);
+    // float reg_evals[3] = float[](evals[0], evals[1], evals[2]);
+    float max_eval = max(evals[0], max(evals[1], evals[2]));
+    float reg_evals[3];
+    if (max_eval > 0.0) {
+        reg_evals[0] = max(evals[0] / max_eval, 1e-6);
+        reg_evals[1] = max(evals[1] / max_eval, 1e-6);
+        reg_evals[2] = max(evals[2] / max_eval, 1e-6);
+    } else {
+        reg_evals[0] = 1.0; reg_evals[1] = 1.0; reg_evals[2] = 1.0;
+    }
 
     // C = V * diag(reg_evals) * V^T
     float r00 = 0.0, r01 = 0.0, r02 = 0.0;

@@ -1,0 +1,1484 @@
+warning: unused imports: `QueryPoolCreateInfo`, `QueryPool`, and `QueryType`
+  --> src/gpu_clustering.rs:14:13
+   |
+14 |     query::{QueryPool, QueryPoolCreateInfo, QueryType},
+   |             ^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `core::num`
+ --> src/gpu_voxel.rs:2:5
+  |
+2 | use core::num;
+  |     ^^^^^^^^^
+
+warning: unused import: `Context`
+ --> src/oprate_pcd.rs:1:14
+  |
+1 | use anyhow::{Context, Result};
+  |              ^^^^^^^
+
+warning: variable `max_count` is assigned to, but never used
+  --> src/clustering.rs:19:9
+   |
+19 |     let mut max_count = 0;
+   |         ^^^^^^^^^^^^^
+   |
+   = note: consider using `_max_count` instead
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: value assigned to `max_count` is never read
+  --> src/clustering.rs:74:13
+   |
+74 |             max_count = count;
+   |             ^^^^^^^^^^^^^^^^^
+   |
+   = help: maybe it is overwritten before being read?
+   = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `pts`
+   --> src/gpu_clustering.rs:153:9
+    |
+153 |         pts: &[[f32; 3]],
+    |         ^^^ help: if this is intentional, prefix it with an underscore: `_pts`
+
+warning: unused variable: `table_size`
+   --> src/gpu_clustering.rs:171:13
+    |
+171 |         let table_size = num_pts * 4;
+    |             ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_table_size`
+
+warning: unused variable: `pts`
+  --> src/gpu_covariance.rs:93:9
+   |
+93 |         pts: &[[f32; 3]],
+   |         ^^^ help: if this is intentional, prefix it with an underscore: `_pts`
+
+warning: unused variable: `only_compute_covs`
+  --> src/gpu_covariance.rs:95:9
+   |
+95 |         only_compute_covs: bool,
+   |         ^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_only_compute_covs`
+
+warning: unused variable: `query_pool`
+   --> src/gpu_covariance.rs:219:13
+    |
+219 |         let query_pool = if timestamps_supported {
+    |             ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_query_pool`
+
+warning: unused variable: `descriptor_set_allocator`
+   --> src/gpu_voxel.rs:151:13
+    |
+151 |         let descriptor_set_allocator = Arc::new(StandardDescriptorSetAllocator::new(
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_descriptor_set_allocator`
+
+warning: unused variable: `query_pool`
+   --> src/gpu_voxel.rs:586:13
+    |
+586 |         let query_pool = if timestamps_supported {
+    |             ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_query_pool`
+
+warning: field `staging_buf_output_pts` is never read
+  --> src/gpu_clustering.rs:46:5
+   |
+29 | pub struct ClusteringGpuContext {
+   |            -------------------- field in this struct
+...
+46 |     staging_buf_output_pts: Option<Subbuffer<[f32]>>,
+   |     ^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `d_buf_input_pts` is never read
+  --> src/gpu_covariance.rs:30:5
+   |
+23 | pub struct CovarianceGpuContext {
+   |            -------------------- field in this struct
+...
+30 |     d_buf_input_pts: Option<Subbuffer<[f32]>>,
+   |     ^^^^^^^^^^^^^^^
+
+warning: field `staging_h_buf_input_pts` is never read
+  --> src/gpu_voxel.rs:45:5
+   |
+32 | pub struct VoxelGpuContext {
+   |            --------------- field in this struct
+...
+45 |     staging_h_buf_input_pts: Option<Subbuffer<[f32]>>,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `remove-unnecessary-points` (lib) generated 15 warnings (run `cargo fix --lib -p remove-unnecessary-points` to apply 10 suggestions)
+   Compiling remove-unnecessary-points v0.1.0 (/home/kenji/workspace/rust/remove-unnecessary-points)
+warning: unused imports: `NonZero`, `os::unix::process`, and `sync::Arc`
+ --> src/main.rs:5:11
+  |
+5 |     num::{NonZero, NonZeroUsize},
+  |           ^^^^^^^
+6 |     os::unix::process,
+  |     ^^^^^^^^^^^^^^^^^
+7 |     sync::Arc,
+  |     ^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `SymmetricEigen`
+  --> src/main.rs:12:25
+   |
+12 | use nalgebra::{Matrix3, SymmetricEigen, Vector3};
+   |                         ^^^^^^^^^^^^^^
+
+warning: unused imports: `PointXYZCovs`, `load_pcd_xyzrgb`, `plot::plot_xy_grid_heatmap`, `save_pcd_with_covs`, `save_pcd_with_shape_feats`, `save_pcd`, and `voxelize::voxel_downsample_array2`
+  --> src/main.rs:24:19
+   |
+24 |         PointXYZ, PointXYZCovs, PointXYZWithShapeFeat, load_pcd_xyz, load_pcd_xyzrgb, save_pcd,
+   |                   ^^^^^^^^^^^^                                       ^^^^^^^^^^^^^^^  ^^^^^^^^
+25 |         save_pcd_with_covs, save_pcd_with_shape_feats, save_xyz_pcd,
+   |         ^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^
+26 |     },
+27 |     plot::plot_xy_grid_heatmap,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+28 |     voxelize::voxel_downsample_array2,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused variable: `count`
+   --> src/main.rs:183:36
+    |
+183 |         for (j, (_, human_cluster, count)) in human_cluster_pairs.iter().enumerate() {
+    |                                    ^^^^^ help: if this is intentional, prefix it with an underscore: `_count`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `ix`
+   --> src/main.rs:322:12
+    |
+322 |     for (&(ix, iy), cell) in grid.iter() {
+    |            ^^ help: if this is intentional, prefix it with an underscore: `_ix`
+
+warning: unused variable: `iy`
+   --> src/main.rs:322:16
+    |
+322 |     for (&(ix, iy), cell) in grid.iter() {
+    |                ^^ help: if this is intentional, prefix it with an underscore: `_iy`
+
+warning: unused variable: `remove_min_z_range`
+   --> src/main.rs:339:5
+    |
+339 |     remove_min_z_range: f32,
+    |     ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_remove_min_z_range`
+
+warning: constant `NUMBERING` is never used
+  --> src/main.rs:45:7
+   |
+45 | const NUMBERING: usize = 180;
+   |       ^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `ProcessTime` is never constructed
+  --> src/main.rs:49:8
+   |
+49 | struct ProcessTime {
+   |        ^^^^^^^^^^^
+
+warning: struct `ProcessTimeResults` is never constructed
+  --> src/main.rs:55:8
+   |
+55 | struct ProcessTimeResults {
+   |        ^^^^^^^^^^^^^^^^^^
+
+warning: function `remove_unnecessary_points` is never used
+   --> src/main.rs:337:4
+    |
+337 | fn remove_unnecessary_points(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `point_xyz_to_array2` is never used
+   --> src/main.rs:410:4
+    |
+410 | fn point_xyz_to_array2(points: &[PointXYZ]) -> Array2<f32> {
+    |    ^^^^^^^^^^^^^^^^^^^
+
+warning: `remove-unnecessary-points` (bin "remove-unnecessary-points") generated 12 warnings (run `cargo fix --bin "remove-unnecessary-points" -p remove-unnecessary-points` to apply 7 suggestions)
+    Finished `release` profile [optimized] target(s) in 0.49s
+     Running `target/release/remove-unnecessary-points`
+[2026-03-01T13:22:12Z INFO  remove_unnecessary_points] Found 675 PCD files in directory /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points::init_gpu] === Available Vulkan Devices ===
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points::init_gpu] Device 0: NVIDIA GeForce RTX 4080 (DiscreteGpu)
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points::init_gpu] Device 1: llvmpipe (LLVM 15.0.7, 256 bits) (Cpu)
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points::init_gpu] 
+    
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points::init_gpu] Selected device: NVIDIA GeForce RTX 4080 (DiscreteGpu)
+    
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points::init_gpu] === Vulkan Device Information ===
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points::init_gpu] Device Name: NVIDIA GeForce RTX 4080
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points::init_gpu] Device Type: DiscreteGpu
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points::init_gpu] Vulkan context initialized successfully.
+    
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points] === Parameters ===
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points] Input PCD path: data/input/20260210/box/transformed-combined-frame-180.pcd
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points] Voxel size: 0.05
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points] MIN_Z: -0.5
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points] MAX_Z: 1.5
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points] MIN_Z_RANGE: 0.7
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points] MAX_Z_RANGE: 1.75
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points] K_NEIGHBORS: 20
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points] PLANARITY_THRESHOLD: 0.85
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points] LINEARITY_THRESHOLD: 0.85
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points] SCATTERING_THRESHOLD: 0.06
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points] NORMAL_Z_THRESHOLD: 0.85
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points] DEBUG_ITERATIONS: 9
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points] ====================
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points] === Processing PCD 1/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-0.pcd ===
+[2026-03-01T13:22:12Z DEBUG remove_unnecessary_points::gpu_voxel] Reallocating buffers for 39773 points
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 457.091µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 20598
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_covariance] Reallocating buffers for 20598 points
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 165.682µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 109.516µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 2190
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_clustering] Reallocating buffers for 2190 points
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 606.64µs
+[2026-03-01T13:22:13Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-0_voxel-0.05.pcd
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Found 176 total clusters
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points] === Processing PCD 2/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-1.pcd ===
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Reallocating buffers for 78888 points
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 225.295µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32042
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_covariance] Reallocating buffers for 32042 points
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 217.811µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 110.838µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4557
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_clustering] Reallocating buffers for 4557 points
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 781.87µs
+[2026-03-01T13:22:13Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-1_voxel-0.05.pcd
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Found 204 total clusters
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:13Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-1_voxel-0.05.pcd
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points] === Processing PCD 3/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-2.pcd ===
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 196.249µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32056
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 195.468µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 102.514µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4407
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 811.52µs
+[2026-03-01T13:22:13Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-2_voxel-0.05.pcd
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Found 193 total clusters
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:13Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-2_voxel-0.05.pcd
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points] === Processing PCD 4/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-3.pcd ===
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 223.061µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32075
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 203.363µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 100.109µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4562
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 764.94µs
+[2026-03-01T13:22:13Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-3_voxel-0.05.pcd
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Found 202 total clusters
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points] === Processing PCD 5/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-4.pcd ===
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 216.628µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32002
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 212.02µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 186.45µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4622
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 824.24µs
+[2026-03-01T13:22:13Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-4_voxel-0.05.pcd
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Found 185 total clusters
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points] === Processing PCD 6/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-5.pcd ===
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 201.569µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31972
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 191.09µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 109.996µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4713
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 794.93µs
+[2026-03-01T13:22:13Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-5_voxel-0.05.pcd
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Found 193 total clusters
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:13Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-5_voxel-0.05.pcd
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points] === Processing PCD 7/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-6.pcd ===
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 277.273µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32105
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 215.164µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 98.745µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4673
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 788.20µs
+[2026-03-01T13:22:13Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-6_voxel-0.05.pcd
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Found 196 total clusters
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:13Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-6_voxel-0.05.pcd
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points] === Processing PCD 8/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-7.pcd ===
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 186.502µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32271
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 200.677µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 94.749µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4782
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 773.75µs
+[2026-03-01T13:22:13Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-7_voxel-0.05.pcd
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Found 202 total clusters
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:13Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-7_voxel-0.05.pcd
+[2026-03-01T13:22:13Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-7_voxel-0.05.pcd
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points] === Processing PCD 9/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-8.pcd ===
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 225.365µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32056
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 185.119µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 110.086µs
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4837
+[2026-03-01T13:22:13Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 830.94µs
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-8_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Found 182 total clusters
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-8_voxel-0.05.pcd
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-8_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points] === Processing PCD 10/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-9.pcd ===
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 214.142µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31998
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 182.162µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 104.185µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4514
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 780.34µs
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-9_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Found 198 total clusters
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-9_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points] === Processing PCD 11/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-10.pcd ===
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 218.251µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31870
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 200.107µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 107.702µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4610
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 814.66µs
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-10_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Found 195 total clusters
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-10_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points] === Processing PCD 12/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-11.pcd ===
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 218.793µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32051
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 224.543µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 85.952µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4515
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 750.59µs
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-11_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Found 195 total clusters
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-11_voxel-0.05.pcd
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-11_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points] === Processing PCD 13/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-12.pcd ===
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 207.811µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32096
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 278.885µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 112.381µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4693
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 850.65µs
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-12_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Found 183 total clusters
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-12_voxel-0.05.pcd
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-12_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points] === Processing PCD 14/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-13.pcd ===
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 195.658µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32298
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 179.527µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 109.746µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4719
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 870.42µs
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-13_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Found 197 total clusters
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-13_voxel-0.05.pcd
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-13_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points] === Processing PCD 15/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-14.pcd ===
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 184.688µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32214
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 179.147µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 103.474µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4738
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 781.12µs
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-14_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Found 192 total clusters
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-14_voxel-0.05.pcd
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-14_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points] === Processing PCD 16/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-15.pcd ===
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 197.752µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32209
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 202.973µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 337.566µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4608
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 768.09µs
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-15_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Found 204 total clusters
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-15_voxel-0.05.pcd
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-15_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points] === Processing PCD 17/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-16.pcd ===
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 212.37µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31904
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 168.608µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 88.688µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4729
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 760.15µs
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-16_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Found 193 total clusters
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-16_voxel-0.05.pcd
+[2026-03-01T13:22:14Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-16_voxel-0.05.pcd
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points] === Processing PCD 18/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-17.pcd ===
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 199.937µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32089
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 196.81µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 113.313µs
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4705
+[2026-03-01T13:22:14Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 823.73µs
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-17_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Found 204 total clusters
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-17_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points] === Processing PCD 19/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-18.pcd ===
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 204.575µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31946
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 198.292µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 143.309µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4691
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 897.13µs
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-18_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Found 195 total clusters
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Extracted 3 human-like clusters
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-18_voxel-0.05.pcd
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-18_voxel-0.05.pcd
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved human cluster 2 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-2_num-18_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points] === Processing PCD 20/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-19.pcd ===
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 211.497µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32151
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 229.541µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 106.531µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4841
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 834.14µs
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-19_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Found 200 total clusters
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-19_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points] === Processing PCD 21/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-20.pcd ===
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 205.146µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32283
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 254.337µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 97.884µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4906
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 784.81µs
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-20_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Found 198 total clusters
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-20_voxel-0.05.pcd
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-20_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points] === Processing PCD 22/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-21.pcd ===
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 270.48µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32180
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 225.475µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 93.456µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4692
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 794.51µs
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-21_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Found 208 total clusters
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-21_voxel-0.05.pcd
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-21_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points] === Processing PCD 23/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-22.pcd ===
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 205.447µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31903
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 206.479µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 85.23µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4737
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 822.56µs
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-22_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Found 186 total clusters
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-22_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points] === Processing PCD 24/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-23.pcd ===
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 173.807µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32029
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 199.115µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 96.561µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4801
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 817.48µs
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-23_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Found 198 total clusters
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-23_voxel-0.05.pcd
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-23_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points] === Processing PCD 25/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-24.pcd ===
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 195.658µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32282
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 197.643µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 97.353µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4916
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 800.26µs
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-24_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Found 216 total clusters
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-24_voxel-0.05.pcd
+[2026-03-01T13:22:15Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-24_voxel-0.05.pcd
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points] === Processing PCD 26/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-25.pcd ===
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 238.949µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32156
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 167.405µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 89.719µs
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4813
+[2026-03-01T13:22:15Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 862.68µs
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-25_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Found 182 total clusters
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-25_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points] === Processing PCD 27/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-26.pcd ===
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 192.252µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32125
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 201.127µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 84.538µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4894
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 1.01ms
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-26_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Found 177 total clusters
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-26_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points] === Processing PCD 28/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-27.pcd ===
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 207.501µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32216
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 178.356µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 91.15µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4657
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 795.45µs
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-27_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Found 185 total clusters
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-27_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points] === Processing PCD 29/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-28.pcd ===
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 183.836µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31962
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 179.216µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 98.435µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4734
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 827.26µs
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-28_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Found 186 total clusters
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-28_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points] === Processing PCD 30/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-29.pcd ===
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 209.383µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32002
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 186.913µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 342.525µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4849
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 798.93µs
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-29_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Found 196 total clusters
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-29_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points] === Processing PCD 31/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-30.pcd ===
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 827.958µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32268
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 551.949µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 139.131µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4810
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 3.10ms
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-30_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Found 195 total clusters
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-30_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points] === Processing PCD 32/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-31.pcd ===
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.022113ms
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31952
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 532.502µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 161.514µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4741
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 3.01ms
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-31_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Found 177 total clusters
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-31_voxel-0.05.pcd
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-31_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points] === Processing PCD 33/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-32.pcd ===
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 630.677µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32139
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 639.173µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 160.493µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4648
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 3.33ms
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-32_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Found 199 total clusters
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:16Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-32_voxel-0.05.pcd
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points] === Processing PCD 34/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-33.pcd ===
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.389706ms
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32276
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 605.039µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 162.817µs
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4756
+[2026-03-01T13:22:16Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 3.45ms
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-33_voxel-0.05.pcd
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Found 186 total clusters
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-33_voxel-0.05.pcd
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-33_voxel-0.05.pcd
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points] === Processing PCD 35/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-34.pcd ===
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 722.72µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31831
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 665.844µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 180.19µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4852
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 3.51ms
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-34_voxel-0.05.pcd
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Found 176 total clusters
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-34_voxel-0.05.pcd
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points] === Processing PCD 36/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-35.pcd ===
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.093999ms
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31976
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 630.576µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 171.233µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4850
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 3.67ms
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-35_voxel-0.05.pcd
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Found 181 total clusters
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-35_voxel-0.05.pcd
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-35_voxel-0.05.pcd
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points] === Processing PCD 37/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-36.pcd ===
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.496066ms
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32390
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 704.556µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 175.991µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4944
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.45ms
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-36_voxel-0.05.pcd
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Found 185 total clusters
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-36_voxel-0.05.pcd
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points] === Processing PCD 38/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-37.pcd ===
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 940.358µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32310
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 891.659µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 220.134µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5035
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.09ms
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-37_voxel-0.05.pcd
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Found 197 total clusters
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-37_voxel-0.05.pcd
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points] === Processing PCD 39/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-38.pcd ===
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.506155ms
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32054
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 923.677µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 789.345µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5082
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.26ms
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-38_voxel-0.05.pcd
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Found 192 total clusters
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-38_voxel-0.05.pcd
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-38_voxel-0.05.pcd
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points] === Processing PCD 40/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-39.pcd ===
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.545929ms
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32018
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 954.877µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 799.704µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4929
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.45ms
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-39_voxel-0.05.pcd
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Found 190 total clusters
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-39_voxel-0.05.pcd
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points] === Processing PCD 41/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-40.pcd ===
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.486297ms
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32004
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 975.836µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 847.775µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5060
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 5.06ms
+[2026-03-01T13:22:17Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-40_voxel-0.05.pcd
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Found 193 total clusters
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points] === Processing PCD 42/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-41.pcd ===
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.593879ms
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32132
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 988.83µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 840.553µs
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5343
+[2026-03-01T13:22:17Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 4.97ms
+[2026-03-01T13:22:18Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-41_voxel-0.05.pcd
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::clustering] Found 199 total clusters
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:18Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-41_voxel-0.05.pcd
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points] === Processing PCD 43/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-42.pcd ===
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.622162ms
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32357
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.111372ms
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 850.141µs
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5304
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 5.64ms
+[2026-03-01T13:22:18Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-42_voxel-0.05.pcd
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::clustering] Found 205 total clusters
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:18Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-42_voxel-0.05.pcd
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points] === Processing PCD 44/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-43.pcd ===
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.648192ms
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32260
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.068662ms
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 896.456µs
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5265
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 6.43ms
+[2026-03-01T13:22:18Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-43_voxel-0.05.pcd
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::clustering] Found 204 total clusters
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:18Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-43_voxel-0.05.pcd
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points] === Processing PCD 45/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-44.pcd ===
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.56702ms
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32214
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.129436ms
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 652.638µs
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5360
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 6.61ms
+[2026-03-01T13:22:18Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-44_voxel-0.05.pcd
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::clustering] Found 200 total clusters
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:18Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-44_voxel-0.05.pcd
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points] === Processing PCD 46/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-45.pcd ===
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.606564ms
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31869
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.248029ms
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 924.569µs
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5288
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 6.67ms
+[2026-03-01T13:22:18Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-45_voxel-0.05.pcd
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::clustering] Found 210 total clusters
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points] === Processing PCD 47/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-46.pcd ===
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.675263ms
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31785
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.311378ms
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 993.24µs
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5454
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 9.71ms
+[2026-03-01T13:22:18Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-46_voxel-0.05.pcd
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::clustering] Found 182 total clusters
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:18Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-46_voxel-0.05.pcd
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points] === Processing PCD 48/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-47.pcd ===
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.779629ms
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 32101
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.319623ms
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 969.825µs
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5723
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.72ms
+[2026-03-01T13:22:18Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-47_voxel-0.05.pcd
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::clustering] Found 207 total clusters
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::clustering] Extracted 3 human-like clusters
+[2026-03-01T13:22:18Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-47_voxel-0.05.pcd
+[2026-03-01T13:22:18Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-47_voxel-0.05.pcd
+[2026-03-01T13:22:18Z INFO  remove_unnecessary_points] Saved human cluster 2 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-2_num-47_voxel-0.05.pcd
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points] === Processing PCD 49/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-48.pcd ===
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.644706ms
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31979
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.313692ms
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 968.373µs
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5472
+[2026-03-01T13:22:18Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.56ms
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-48_voxel-0.05.pcd
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::clustering] Found 196 total clusters
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-48_voxel-0.05.pcd
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-48_voxel-0.05.pcd
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points] === Processing PCD 50/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-49.pcd ===
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.733693ms
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31774
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.294997ms
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 962.241µs
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5357
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.85ms
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-49_voxel-0.05.pcd
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::clustering] Found 202 total clusters
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-49_voxel-0.05.pcd
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-49_voxel-0.05.pcd
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points] === Processing PCD 51/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-50.pcd ===
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.855071ms
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31678
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.285671ms
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 976.417µs
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5378
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 8.06ms
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-50_voxel-0.05.pcd
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::clustering] Found 213 total clusters
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-50_voxel-0.05.pcd
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-50_voxel-0.05.pcd
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points] === Processing PCD 52/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-51.pcd ===
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.645096ms
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31567
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.313973ms
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 961.67µs
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5451
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.69ms
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-51_voxel-0.05.pcd
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::clustering] Found 200 total clusters
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-51_voxel-0.05.pcd
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points] === Processing PCD 53/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-52.pcd ===
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.893233ms
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31214
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.7377ms
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 981.898µs
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5198
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.44ms
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-52_voxel-0.05.pcd
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::clustering] Found 204 total clusters
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-52_voxel-0.05.pcd
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-52_voxel-0.05.pcd
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points] === Processing PCD 54/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-53.pcd ===
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.654073ms
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31569
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.322699ms
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 985.986µs
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5308
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.82ms
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-53_voxel-0.05.pcd
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::clustering] Found 192 total clusters
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::clustering] Extracted 3 human-like clusters
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-53_voxel-0.05.pcd
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-53_voxel-0.05.pcd
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved human cluster 2 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-2_num-53_voxel-0.05.pcd
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points] === Processing PCD 55/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-54.pcd ===
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.623385ms
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31590
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.252618ms
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 978.071µs
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5081
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.27ms
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-54_voxel-0.05.pcd
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::clustering] Found 197 total clusters
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-54_voxel-0.05.pcd
+[2026-03-01T13:22:19Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-54_voxel-0.05.pcd
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points] === Processing PCD 56/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-55.pcd ===
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.629547ms
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31465
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.303122ms
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 779.297µs
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5206
+[2026-03-01T13:22:19Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.46ms
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-55_voxel-0.05.pcd
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Found 203 total clusters
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-55_voxel-0.05.pcd
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points] === Processing PCD 57/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-56.pcd ===
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.654754ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31274
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.28033ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 998.049µs
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5163
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 8.19ms
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-56_voxel-0.05.pcd
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Found 206 total clusters
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-56_voxel-0.05.pcd
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-56_voxel-0.05.pcd
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points] === Processing PCD 58/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-57.pcd ===
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.655937ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31444
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.238691ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 984.994µs
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4866
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.69ms
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-57_voxel-0.05.pcd
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Found 223 total clusters
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points] === Processing PCD 59/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-58.pcd ===
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.4826ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30988
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.267496ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 964.346µs
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4997
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.47ms
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-58_voxel-0.05.pcd
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Found 205 total clusters
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-58_voxel-0.05.pcd
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points] === Processing PCD 60/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-59.pcd ===
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.63141ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31156
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.217632ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 984.573µs
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5133
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.30ms
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-59_voxel-0.05.pcd
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Found 204 total clusters
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-59_voxel-0.05.pcd
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-59_voxel-0.05.pcd
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points] === Processing PCD 61/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-60.pcd ===
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.657719ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31668
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.239072ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 969.975µs
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5198
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.38ms
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-60_voxel-0.05.pcd
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Found 202 total clusters
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-60_voxel-0.05.pcd
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points] === Processing PCD 62/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-61.pcd ===
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.641879ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31477
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.327018ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 955.287µs
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5037
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.37ms
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-61_voxel-0.05.pcd
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Found 199 total clusters
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Extracted 3 human-like clusters
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-61_voxel-0.05.pcd
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-61_voxel-0.05.pcd
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved human cluster 2 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-2_num-61_voxel-0.05.pcd
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points] === Processing PCD 63/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-62.pcd ===
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.62597ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31275
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.354199ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 978.833µs
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5058
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.54ms
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-62_voxel-0.05.pcd
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Found 209 total clusters
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-62_voxel-0.05.pcd
+[2026-03-01T13:22:20Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-62_voxel-0.05.pcd
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points] === Processing PCD 64/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-63.pcd ===
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.638604ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31340
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.257477ms
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 979.314µs
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4939
+[2026-03-01T13:22:20Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 8.46ms
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-63_voxel-0.05.pcd
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::clustering] Found 217 total clusters
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-63_voxel-0.05.pcd
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-63_voxel-0.05.pcd
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points] === Processing PCD 65/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-64.pcd ===
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.789257ms
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31337
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.308201ms
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 970.207µs
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5090
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.39ms
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-64_voxel-0.05.pcd
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::clustering] Found 181 total clusters
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-64_voxel-0.05.pcd
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points] === Processing PCD 66/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-65.pcd ===
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.632644ms
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31144
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.183158ms
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 967.68µs
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5004
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.39ms
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-65_voxel-0.05.pcd
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::clustering] Found 192 total clusters
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::clustering] Extracted 3 human-like clusters
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-65_voxel-0.05.pcd
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-65_voxel-0.05.pcd
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved human cluster 2 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-2_num-65_voxel-0.05.pcd
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points] === Processing PCD 67/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-66.pcd ===
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.735206ms
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31588
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.236587ms
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 975.867µs
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5087
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.19ms
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-66_voxel-0.05.pcd
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::clustering] Found 189 total clusters
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::clustering] Extracted 3 human-like clusters
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-66_voxel-0.05.pcd
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-66_voxel-0.05.pcd
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved human cluster 2 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-2_num-66_voxel-0.05.pcd
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points] === Processing PCD 68/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-67.pcd ===
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.767717ms
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31480
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.276433ms
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 984.243µs
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5238
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.22ms
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-67_voxel-0.05.pcd
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::clustering] Found 207 total clusters
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-67_voxel-0.05.pcd
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points] === Processing PCD 69/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-68.pcd ===
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.746868ms
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31126
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.277014ms
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 722.739µs
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5046
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.83ms
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-68_voxel-0.05.pcd
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::clustering] Found 200 total clusters
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-68_voxel-0.05.pcd
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points] === Processing PCD 70/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-69.pcd ===
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.633935ms
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31371
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.320195ms
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 751.895µs
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4924
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.49ms
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-69_voxel-0.05.pcd
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::clustering] Found 210 total clusters
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-69_voxel-0.05.pcd
+[2026-03-01T13:22:21Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-69_voxel-0.05.pcd
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points] === Processing PCD 71/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-70.pcd ===
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.750265ms
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31293
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.287954ms
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 838.889µs
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5107
+[2026-03-01T13:22:21Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.96ms
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-70_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Found 206 total clusters
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-70_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points] === Processing PCD 72/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-71.pcd ===
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.656866ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31109
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.645296ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 990.766µs
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4931
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.55ms
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-71_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Found 226 total clusters
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Extracted 3 human-like clusters
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-71_voxel-0.05.pcd
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-71_voxel-0.05.pcd
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 2 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-2_num-71_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points] === Processing PCD 73/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-72.pcd ===
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.650035ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31434
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.255895ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.014669ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5019
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.30ms
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-72_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Found 203 total clusters
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-72_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points] === Processing PCD 74/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-73.pcd ===
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.640047ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31473
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.262306ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 986.035µs
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5197
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.26ms
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-73_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Found 206 total clusters
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Extracted 3 human-like clusters
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-73_voxel-0.05.pcd
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-73_voxel-0.05.pcd
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 2 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-2_num-73_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points] === Processing PCD 75/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-74.pcd ===
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.531132ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31198
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.251556ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 987.839µs
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5193
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 8.03ms
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-74_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Found 197 total clusters
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-74_voxel-0.05.pcd
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-74_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points] === Processing PCD 76/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-75.pcd ===
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.736648ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31231
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.27012ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 991.666µs
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4836
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.28ms
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-75_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Found 215 total clusters
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Extracted 3 human-like clusters
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-75_voxel-0.05.pcd
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-75_voxel-0.05.pcd
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 2 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-2_num-75_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points] === Processing PCD 77/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-76.pcd ===
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.762858ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31386
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.223784ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 981.798µs
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5026
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.19ms
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-76_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Found 212 total clusters
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-76_voxel-0.05.pcd
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-76_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points] === Processing PCD 78/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-77.pcd ===
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.730166ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31206
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.25398ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.011824ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5096
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.31ms
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-77_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Found 217 total clusters
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-77_voxel-0.05.pcd
+[2026-03-01T13:22:22Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-77_voxel-0.05.pcd
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points] === Processing PCD 79/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-78.pcd ===
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.66299ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31336
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.216379ms
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 840.172µs
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4936
+[2026-03-01T13:22:22Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.44ms
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-78_voxel-0.05.pcd
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::clustering] Found 200 total clusters
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::clustering] Extracted 3 human-like clusters
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-78_voxel-0.05.pcd
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-78_voxel-0.05.pcd
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved human cluster 2 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-2_num-78_voxel-0.05.pcd
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points] === Processing PCD 80/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-79.pcd ===
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.734635ms
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31464
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.209125ms
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 975.366µs
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5253
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.30ms
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-79_voxel-0.05.pcd
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::clustering] Found 211 total clusters
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-79_voxel-0.05.pcd
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-79_voxel-0.05.pcd
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points] === Processing PCD 81/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-80.pcd ===
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.737691ms
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31241
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.328751ms
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 961.541µs
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5424
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.55ms
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-80_voxel-0.05.pcd
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::clustering] Found 208 total clusters
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-80_voxel-0.05.pcd
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-80_voxel-0.05.pcd
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points] === Processing PCD 82/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-81.pcd ===
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.76373ms
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31431
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.298894ms
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.003869ms
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5245
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 8.29ms
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-81_voxel-0.05.pcd
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::clustering] Found 200 total clusters
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-81_voxel-0.05.pcd
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-81_voxel-0.05.pcd
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points] === Processing PCD 83/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-82.pcd ===
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.669673ms
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31167
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.273476ms
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 951.58µs
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5234
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.43ms
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-82_voxel-0.05.pcd
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::clustering] Found 209 total clusters
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::clustering] Extracted 3 human-like clusters
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-82_voxel-0.05.pcd
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-82_voxel-0.05.pcd
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved human cluster 2 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-2_num-82_voxel-0.05.pcd
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points] === Processing PCD 84/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-83.pcd ===
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.75903ms
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 31033
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.301179ms
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 970.507µs
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5324
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.69ms
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-83_voxel-0.05.pcd
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::clustering] Found 199 total clusters
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::clustering] Extracted 2 human-like clusters
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-83_voxel-0.05.pcd
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved human cluster 1 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-1_num-83_voxel-0.05.pcd
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points] === Processing PCD 85/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-84.pcd ===
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.743542ms
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30698
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.246494ms
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 965.207µs
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5265
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.59ms
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-84_voxel-0.05.pcd
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::clustering] Found 200 total clusters
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:23Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-84_voxel-0.05.pcd
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points] === Processing PCD 86/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-85.pcd ===
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.626321ms
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30632
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.161907ms
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 982.308µs
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5134
+[2026-03-01T13:22:23Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.63ms
+[2026-03-01T13:22:24Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-85_voxel-0.05.pcd
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Found 183 total clusters
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:24Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-85_voxel-0.05.pcd
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points] === Processing PCD 87/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-86.pcd ===
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.733933ms
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30491
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.293835ms
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 951.38µs
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5038
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.52ms
+[2026-03-01T13:22:24Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-86_voxel-0.05.pcd
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Found 203 total clusters
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:24Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-86_voxel-0.05.pcd
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points] === Processing PCD 88/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-87.pcd ===
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.755744ms
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30613
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.30196ms
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 969.446µs
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4921
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.55ms
+[2026-03-01T13:22:24Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-87_voxel-0.05.pcd
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Found 206 total clusters
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:24Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-87_voxel-0.05.pcd
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points] === Processing PCD 89/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-88.pcd ===
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.746908ms
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30693
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.256746ms
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 709.996µs
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5131
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.83ms
+[2026-03-01T13:22:24Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-88_voxel-0.05.pcd
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Found 204 total clusters
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points] === Processing PCD 90/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-89.pcd ===
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.607335ms
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30489
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.271613ms
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 978.051µs
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5006
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.74ms
+[2026-03-01T13:22:24Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-89_voxel-0.05.pcd
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Found 192 total clusters
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points] === Processing PCD 91/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-90.pcd ===
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.812671ms
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30602
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.251015ms
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 977.68µs
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5071
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.98ms
+[2026-03-01T13:22:24Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-90_voxel-0.05.pcd
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Found 194 total clusters
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:24Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-90_voxel-0.05.pcd
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points] === Processing PCD 92/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-91.pcd ===
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.733233ms
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30443
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.304305ms
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 976.197µs
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5107
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 8.10ms
+[2026-03-01T13:22:24Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-91_voxel-0.05.pcd
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Found 183 total clusters
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points] === Processing PCD 93/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-92.pcd ===
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.494153ms
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30151
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.281632ms
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 972.961µs
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4977
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.73ms
+[2026-03-01T13:22:24Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-92_voxel-0.05.pcd
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Found 193 total clusters
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points] === Processing PCD 94/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-93.pcd ===
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.668701ms
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30440
+[2026-03-01T13:22:24Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.204877ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.232831ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4905
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.69ms
+[2026-03-01T13:22:25Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-93_voxel-0.05.pcd
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::clustering] Found 202 total clusters
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points] === Processing PCD 95/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-94.pcd ===
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.648492ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30461
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.24416ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 947.864µs
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4970
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.35ms
+[2026-03-01T13:22:25Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-94_voxel-0.05.pcd
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::clustering] Found 209 total clusters
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points] === Processing PCD 96/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-95.pcd ===
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.620419ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30410
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.207993ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.027844ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5128
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.46ms
+[2026-03-01T13:22:25Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-95_voxel-0.05.pcd
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::clustering] Found 200 total clusters
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points] === Processing PCD 97/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-96.pcd ===
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.515822ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30579
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.276523ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.000582ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5026
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.73ms
+[2026-03-01T13:22:25Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-96_voxel-0.05.pcd
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::clustering] Found 197 total clusters
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:25Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-96_voxel-0.05.pcd
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points] === Processing PCD 98/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-97.pcd ===
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.736108ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30362
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.229064ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 742.937µs
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5146
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.33ms
+[2026-03-01T13:22:25Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-97_voxel-0.05.pcd
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::clustering] Found 214 total clusters
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:25Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-97_voxel-0.05.pcd
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points] === Processing PCD 99/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-98.pcd ===
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.613276ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30384
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.183328ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 724.543µs
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5102
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.30ms
+[2026-03-01T13:22:25Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-98_voxel-0.05.pcd
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::clustering] Found 190 total clusters
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points] === Processing PCD 100/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-99.pcd ===
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.615211ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30331
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.263899ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 718.013µs
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4910
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.82ms
+[2026-03-01T13:22:25Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-99_voxel-0.05.pcd
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::clustering] Found 207 total clusters
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points] === Processing PCD 101/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-100.pcd ===
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.74768ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30459
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.266374ms
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 975.436µs
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5198
+[2026-03-01T13:22:25Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.42ms
+[2026-03-01T13:22:26Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-100_voxel-0.05.pcd
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Found 190 total clusters
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points] === Processing PCD 102/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-101.pcd ===
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.614288ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30651
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.279229ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 972.902µs
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5025
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.20ms
+[2026-03-01T13:22:26Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-101_voxel-0.05.pcd
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Found 189 total clusters
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Extracted 1 human-like clusters
+[2026-03-01T13:22:26Z INFO  remove_unnecessary_points] Saved human cluster 0 to data/output/branch-20260301-Unified-each-process/human_clusters/human-cluster-0_num-101_voxel-0.05.pcd
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points] === Processing PCD 103/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-102.pcd ===
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.675453ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30483
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.283195ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 999.602µs
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5143
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.66ms
+[2026-03-01T13:22:26Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-102_voxel-0.05.pcd
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Found 206 total clusters
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points] === Processing PCD 104/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-103.pcd ===
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.736689ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30243
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.272907ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 969.856µs
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4912
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.98ms
+[2026-03-01T13:22:26Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-103_voxel-0.05.pcd
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Found 210 total clusters
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points] === Processing PCD 105/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-104.pcd ===
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.635018ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30474
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.224053ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.229264ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5005
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.74ms
+[2026-03-01T13:22:26Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-104_voxel-0.05.pcd
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Found 192 total clusters
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points] === Processing PCD 106/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-105.pcd ===
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.727532ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30524
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.187706ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.001916ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4947
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.61ms
+[2026-03-01T13:22:26Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-105_voxel-0.05.pcd
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Found 218 total clusters
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points] === Processing PCD 107/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-106.pcd ===
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.735718ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30561
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.266404ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 964.495µs
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5038
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.45ms
+[2026-03-01T13:22:26Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-106_voxel-0.05.pcd
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Found 210 total clusters
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points] === Processing PCD 108/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-107.pcd ===
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.36586ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30527
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.274269ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 978.102µs
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5129
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.77ms
+[2026-03-01T13:22:26Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-107_voxel-0.05.pcd
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Found 190 total clusters
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points] === Processing PCD 109/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-108.pcd ===
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.414021ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30451
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.287393ms
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 975.626µs
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 5092
+[2026-03-01T13:22:26Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.55ms
+[2026-03-01T13:22:27Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-108_voxel-0.05.pcd
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::clustering] Found 190 total clusters
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points] === Processing PCD 110/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-109.pcd ===
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.739714ms
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30313
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.30169ms
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 968.862µs
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4960
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.53ms
+[2026-03-01T13:22:27Z INFO  remove_unnecessary_points] Saved colored clusters to data/output/branch-20260301-Unified-each-process/clustering/clustering_num-109_voxel-0.05.pcd
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::clustering] Found 224 total clusters
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::clustering] Extracted 0 human-like clusters
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points] === Processing PCD 111/675: /home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box/transformed-combined-frame-110.pcd ===
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 1.373985ms
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 30485
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::gpu_covariance] Compute covariance shader execution time: 1.251346ms
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::gpu_voxel] Compute voxelization shader execution time: 992.678µs
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::gpu_voxel] Number of output points: 4995
+[2026-03-01T13:22:27Z DEBUG remove_unnecessary_points::gpu_clustering] Compute clustering shader execution time: 7.37ms

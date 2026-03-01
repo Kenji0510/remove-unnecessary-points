@@ -4,6 +4,7 @@ pub mod gpu_clustering;
 pub mod gpu_covariance;
 pub mod gpu_voxel;
 pub mod init_gpu;
+pub mod load_pcds;
 pub mod oprate_pcd;
 pub mod plot;
 pub mod remove_by_covs;

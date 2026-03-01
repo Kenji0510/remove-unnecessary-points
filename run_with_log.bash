@@ -1,0 +1,1 @@
+cargo run --release > log.txt 2>&1

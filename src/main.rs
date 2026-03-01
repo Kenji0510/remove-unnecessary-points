@@ -8,7 +8,7 @@ use std::{
 };
 
 use anyhow::{Context, Result};
-use log::debug;
+use log::{debug, info};
 use nalgebra::{Matrix3, SymmetricEigen, Vector3};
 use ndarray::Array2;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
@@ -19,6 +19,7 @@ use remove_unnecessary_points::{
     gpu_covariance::CovarianceGpuContext,
     gpu_voxel::VoxelGpuContext,
     init_gpu::VulkanContext,
+    load_pcds::load_filenames,
     oprate_pcd::{
         PointXYZ, PointXYZCovs, PointXYZWithShapeFeat, load_pcd_xyz, load_pcd_xyzrgb, save_pcd,
         save_pcd_with_covs, save_pcd_with_shape_feats, save_xyz_pcd,
@@ -31,12 +32,12 @@ const K_NEIGHBORS: usize = 20;
 const VOXEL_SIZE: f32 = 0.05;
 const PLANARITY_THRESHOLD: f64 = 0.85;
 const LINEARITY_THRESHOLD: f64 = 0.85;
-const SCATTERING_THRESHOLD: f64 = 0.15;
+const SCATTERING_THRESHOLD: f64 = 0.06;
 const NORMAL_Z_THRESHOLD: f64 = 0.85;
+const MIN_CLUSTER_POINTS: usize = 200;
 const PCD_PATH: &str = "data/input/20260210/box/transformed-combined-frame-180.pcd";
-const SAVE_ORIGINAL_PCD_PATH: &str = "data/output/voxelized-H927-hallway-01.pcd";
-const SAVE_REMOVED_PCD_PATH: &str =
-    "data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxelized-0.2.pcd";
+const PCD_DIR_PATH: &str = "/home/kenji/workspace/rust/r2r-subscriber-for-avia/data/output/transformed_data/avia/avias-20260210-04-carryboard-and-box";
+const SAVE_DATA_PATH: &str = "data/output/branch-20260301-Unified-each-process";
 const MIN_Z: f32 = -0.5;
 const MAX_Z: f32 = 1.5;
 const MIN_Z_RANGE: f32 = 0.7;
@@ -59,6 +60,17 @@ struct ProcessTimeResults {
 fn main() -> Result<()> {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("debug")).init();
 
+    // <!--- Load PCD paths --->
+    let pcd_dir = load_filenames(PCD_DIR_PATH)?;
+    info!(
+        "Found {} PCD files in directory {}",
+        pcd_dir.len(),
+        PCD_DIR_PATH
+    );
+    // return Ok(());
+    // <!--- Load PCD paths --->
+
+    // <!--- Initialize GPU contexts --->
     let vulkan_context = VulkanContext::new().context("Failed to initialize Vulkan context")?;
     let mut gpu_voxel_ctx = VoxelGpuContext::new(vulkan_context.clone())
         .context("Failed to create GPU voxel context")?;
@@ -66,13 +78,10 @@ fn main() -> Result<()> {
         .context("Failed to create GPU covariance context")?;
     let mut gpu_clustering_ctx = ClusteringGpuContext::new(vulkan_context.clone())
         .context("Failed to create GPU clustering context")?;
-
-    let pcd = load_pcd_xyz(PCD_PATH).context("Failed to load the pcd")?;
-    // let pcd = load_pcd_xyzrgb(PCD_PATH).context("Failed to load the pcd")?;
+    // <!--- Initialize GPU contexts --->
 
     debug!("=== Parameters ===");
     debug!("Input PCD path: {}", PCD_PATH);
-    debug!("Loaded points: {}", pcd.len());
     debug!("Voxel size: {}", VOXEL_SIZE);
     debug!("MIN_Z: {}", MIN_Z);
     debug!("MAX_Z: {}", MAX_Z);
@@ -86,213 +95,106 @@ fn main() -> Result<()> {
     debug!("DEBUG_ITERATIONS: {}", DEBUG_ITERATIONS);
     debug!("====================");
 
-    let mut process_time_results = ProcessTimeResults {
-        raw_processing_time: ProcessTime {
-            voxelization_time: std::time::Duration::ZERO,
-            covariance_time: std::time::Duration::ZERO,
-            clustering_time: std::time::Duration::ZERO,
-        },
-        downsampled_processing_time: ProcessTime {
-            voxelization_time: std::time::Duration::ZERO,
-            covariance_time: std::time::Duration::ZERO,
-            clustering_time: std::time::Duration::ZERO,
-        },
-    };
+    for (i, pcd_path) in pcd_dir.iter().enumerate() {
+        debug!(
+            "=== Processing PCD {}/{}: {} ===",
+            i + 1,
+            pcd_dir.len(),
+            pcd_path.display()
+        );
+        // <!--- Load PCD --->
+        let pcd = load_pcd_xyz(pcd_path.to_str().context("Invalid PCD path")?)
+            .context("Failed to load the pcd")?;
+        // <!--- Load PCD --->
 
-    let start = std::time::Instant::now();
+        // <!--- Convert to 2D XY grid --->
+        // Remove unnecessary points by z-range before converting to 2D XY grid
+        let processed_grid = project_to_xy_grid(&pcd, VOXEL_SIZE, NEG_INFINITY, INFINITY);
+        // <!--- Convert to 2D XY grid --->
 
-    // let converted_2d_grid = project_to_xy_grid(&pcd, VOXEL_SIZE, -0.55, 1.5);
-    let processed_grid = project_to_xy_grid(&pcd, VOXEL_SIZE, NEG_INFINITY, INFINITY);
+        let processed_pcd = grid_to_pcd(&processed_grid);
+        let pts_vec = pcd_to_vecf32(&processed_pcd);
 
-    // let save_path = format!(
-    //     "data/output/2d-xy/converted-2d-grid_voxel-{}.png",
-    //     VOXEL_SIZE
-    // );
-    // plot_xy_grid_heatmap(
-    //     &converted_2d_grid,
-    //     VOXEL_SIZE,
-    //     &save_path,
-    //     "XY Grid: count",
-    //     |cell| cell.z_range() as f64,
-    // )?;
-    // println!("Saved plot to {}", save_path);
+        // <!--- Downsampled pcd by GPU Voxelization --->
+        let downsampled_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
+        // <!--- Downsampled pcd by GPU Voxelization --->
 
-    // let processed_grid = remove_unnecessary_points(&converted_2d_grid, 0.3, 1.3)?;
-    // let processed_grid =
-    //     remove_unnecessary_points(&converted_2d_grid, MIN_Z, MAX_Z, MIN_Z_RANGE, MAX_Z_RANGE)?;
-
-    // let save_path = format!(
-    //     "data/output/2d-xy/processed-2d-grid_voxel-{}_NUM-{}.png",
-    //     VOXEL_SIZE, NUMBERING
-    // );
-    // plot_xy_grid_heatmap(
-    //     &processed_grid,
-    //     VOXEL_SIZE,
-    //     &save_path,
-    //     "XY Grid: Count",
-    //     |cell| cell.count as f64,
-    // )?;
-    // println!("Saved plot to {}", save_path);
-
-    let processed_pcd = grid_to_pcd(&processed_grid);
-
-    let pts_vec = pcd_to_vecf32(&processed_pcd);
-    let mut downsampled_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
-    debug!("GPU voxelization: {} points", downsampled_pts.len());
-
-    // Compute covariances on GPU using the same downsampled points
-    let mut pts_covs = gpu_covariance_ctx.compute_covariances(
-        &gpu_voxel_ctx,
-        &downsampled_pts,
-        downsampled_pts.len(),
-        false,
-    )?;
-
-    // Compute clustering on GPU using the same downsampled points
-    let cluster_ids = gpu_clustering_ctx.clustering(
-        &gpu_voxel_ctx,
-        &downsampled_pts,
-        downsampled_pts.len(),
-        VOXEL_SIZE,
-    )?;
-
-    for i in 0..DEBUG_ITERATIONS {
-        let start = std::time::Instant::now();
-        downsampled_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
-        let voxelization_elapsed = start.elapsed();
-
-        debug!("GPU voxelization: {} points", downsampled_pts.len());
-
+        // <!--- Compute covariances --->
         // Compute covariances on GPU using the same downsampled points
-        let start = std::time::Instant::now();
-        pts_covs = gpu_covariance_ctx.compute_covariances(
+        let pts_covs = gpu_covariance_ctx.compute_covariances(
             &gpu_voxel_ctx,
             &downsampled_pts,
             downsampled_pts.len(),
             false,
         )?;
-        let covariance_elapsed = start.elapsed();
+        // <!--- Compute covariances --->
 
-        // Compute clustering on GPU using the same downsampled points
-        let start = std::time::Instant::now();
-        let cluster_ids = gpu_clustering_ctx.clustering(
-            &gpu_voxel_ctx,
-            &downsampled_pts,
-            downsampled_pts.len(),
-            VOXEL_SIZE,
-        )?;
-        let clustering_elapsed = start.elapsed();
+        // <!--- Compute shape features --->
+        let shape_feats = compute_shape_features_02(&pts_covs);
+        // <!--- Compute shape features --->
 
-        if i > 2 {
-            process_time_results.raw_processing_time.covariance_time += covariance_elapsed;
-            process_time_results.raw_processing_time.voxelization_time += voxelization_elapsed;
-            process_time_results.raw_processing_time.clustering_time += clustering_elapsed;
-        }
-    }
+        let pcd_with_shape_feats = convert_to_pcd_from_vec(&downsampled_pts, &shape_feats);
 
-    let start = std::time::Instant::now();
-    let shape_feats = compute_shape_features_02(&pts_covs);
+        // <!--- Remove unnecessary points by shape features --->
+        let removed_pcd = remove_unnecessary_points_by_shape_feats(&pcd_with_shape_feats)?;
+        // <!--- Remove unnecessary points by shape features --->
 
-    let pcd_with_shape_feats = convert_to_pcd_from_vec(&downsampled_pts, &shape_feats);
-
-    let removed_pcd = remove_unnecessary_points_by_shape_feats(&pcd_with_shape_feats)?;
-    let elapsed = start.elapsed();
-    println!("Removed unnecessary points processing time: {:.2?}", elapsed);
-
-    let elapsed = start.elapsed();
-    debug!("=== Processing Result ===");
-    debug!("After processed points: {}", removed_pcd.len());
-    debug!("Processing time: {:.2?}", elapsed);
-
-    for i in 0..DEBUG_ITERATIONS {
-        // <!--- DEBUG ---> //
         let pts_vec = pcd_shapefeat_to_vecf32(&removed_pcd);
-        let start = std::time::Instant::now();
+        // <!--- Downsampled pcd by GPU Voxelization --->
         let downsampled_pts = gpu_voxel_ctx.voxelization(&pts_vec, pts_vec.len(), VOXEL_SIZE)?;
-        let voxelization_elapsed = start.elapsed();
+        // <!--- Downsampled pcd by GPU Voxelization --->
 
-        // Compute clustering on GPU using the same downsampled points
-        let start = std::time::Instant::now();
+        // <!--- Compute clustering on GPU using the same downsampled points --->
         let cluster_ids = gpu_clustering_ctx.clustering(
             &gpu_voxel_ctx,
             &downsampled_pts,
             downsampled_pts.len(),
             VOXEL_SIZE,
         )?;
-        let clustering_elapsed = start.elapsed();
+        // <!--- Compute clustering on GPU using the same downsampled points --->
 
-        if i > 2 {
-            process_time_results
-                .downsampled_processing_time
-                .voxelization_time += voxelization_elapsed;
-            process_time_results
-                .downsampled_processing_time
-                .clustering_time += clustering_elapsed;
-        }
+        // <!--- Save removed unnecessary points pcd --->
+        // let save_removed_pcd_path = format!(
+        //     "{}/removed_unnecessary_pcd/removed_num-{}_voxel-{}.pcd",
+        //     SAVE_DATA_PATH, i, VOXEL_SIZE
+        // );
+        // save_pcd_with_shape_feats(&pcd_with_shape_feats, &save_removed_pcd_path)?;
+        // info!(
+        //     "Saved removed unnecessary points pcd to {}",
+        //     save_removed_pcd_path
+        // );
+        // <!--- Save removed unnecessary points pcd --->
 
-        if i == DEBUG_ITERATIONS - 1 {
-            let clustering_results_save_path = format!(
-                "data/output/clustering_results/downsampled-clustering-results_voxel-{}_NUM-{}.pcd",
-                VOXEL_SIZE, NUMBERING
+        // <!--- Save clustering results --->
+        let clustering_results_save_path = format!(
+            "{}/clustering/clustering_num-{}_voxel-{}.pcd",
+            SAVE_DATA_PATH, i, VOXEL_SIZE
+        );
+        save_colored_clusters_pcd(
+            &clustering_results_save_path,
+            &downsampled_pts,
+            &cluster_ids,
+        )?;
+        info!("Saved colored clusters to {}", clustering_results_save_path);
+
+        let human_cluster_pairs =
+            extract_human_clusters(&downsampled_pts, &cluster_ids, MIN_CLUSTER_POINTS);
+
+        for (j, (_, human_cluster, count)) in human_cluster_pairs.iter().enumerate() {
+            if j > 3 {
+                break;
+            }
+
+            let human_cluster_save_path = format!(
+                "{}/human_clusters/human-cluster-{}_num-{}_voxel-{}.pcd",
+                SAVE_DATA_PATH, j, i, VOXEL_SIZE
             );
-            save_colored_clusters_pcd(
-                &clustering_results_save_path,
-                &downsampled_pts,
-                &cluster_ids,
-            )?;
-            debug!("Saved colored clusters to {}", clustering_results_save_path);
+            let human_cluster_pcd = vecf32_to_pcd(human_cluster);
+            save_xyz_pcd(&human_cluster_pcd, &human_cluster_save_path)?;
+            info!("Saved human cluster {} to {}", j, human_cluster_save_path);
         }
-        // <!--- DEBUG ---> //
+        // <!--- Save clustering results --->
     }
-
-    debug!("=== Average GPU Processing Time (excluding first 3 iterations) ===");
-    debug!(
-        "Raw points voxelization time: {:.2?}",
-        process_time_results.raw_processing_time.voxelization_time / (DEBUG_ITERATIONS as u32 - 3)
-    );
-    debug!(
-        "Raw points covariance time: {:.2?}",
-        process_time_results.raw_processing_time.covariance_time / (DEBUG_ITERATIONS as u32 - 3)
-    );
-    debug!(
-        "Raw points clustering time: {:.2?}",
-        process_time_results.raw_processing_time.clustering_time / (DEBUG_ITERATIONS as u32 - 3)
-    );
-    debug!(
-        "Downsampled points voxelization time: {:.2?}",
-        process_time_results
-            .downsampled_processing_time
-            .voxelization_time
-            / (DEBUG_ITERATIONS as u32 - 3)
-    );
-    debug!(
-        "Downsampled points clustering time: {:.2?}",
-        process_time_results
-            .downsampled_processing_time
-            .clustering_time
-            / (DEBUG_ITERATIONS as u32 - 3)
-    );
-    debug!("====================");
-
-    let save_removed_pcd_path = format!(
-        "data/output/2d-xy/convert-2d-pts-by-covariance/removed-by-shape-feats_voxel-{}_NUM-{}.pcd",
-        VOXEL_SIZE, NUMBERING
-    );
-    save_pcd_with_shape_feats(&removed_pcd, &save_removed_pcd_path)?;
-    debug!(
-        "Saved removed unnecessary points pcd to {}",
-        save_removed_pcd_path
-    );
-
-    let save_original_pcd_path = format!(
-        "data/output/2d-xy/convert-2d-pts-by-covariance/original-by-shape-feats_voxel-{}_NUM-{}.pcd",
-        VOXEL_SIZE, NUMBERING
-    );
-    save_pcd_with_shape_feats(&pcd_with_shape_feats, &save_original_pcd_path)?;
-    debug!(
-        "Saved voxelized pcd with shape features to {}",
-        save_original_pcd_path
-    );
 
     Ok(())
 }
@@ -392,13 +294,21 @@ fn remove_unnecessary_points_by_shape_feats(
         .iter()
         .filter(|p| {
             let is_horizontal = p.normal_z.abs() > NORMAL_Z_THRESHOLD;
+            let is_planar = (p.planarity as f64) > PLANARITY_THRESHOLD;
+            // let is_linear = (p.linearity as f64) > LINEARITY_THRESHOLD;
+            let is_scattering = (p.scattering as f64) > SCATTERING_THRESHOLD;
 
             if is_horizontal {
                 return false;
             }
+            if is_planar {
+                return false;
+            }
+            if is_scattering {
+                return true;
+            }
 
-            !((p.planarity as f64) > PLANARITY_THRESHOLD
-                || (p.scattering as f64) < SCATTERING_THRESHOLD)
+            false
         })
         .cloned()
         .collect();

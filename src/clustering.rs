@@ -1,4 +1,10 @@
-pub fn extract_human_clusters(pts: &[[f32; 3]], cluster_ids: &[u32]) -> Vec<[f32; 3]> {
+use log::debug;
+
+pub fn extract_human_clusters(
+    pts: &[[f32; 3]],
+    cluster_ids: &[u32],
+    min_points: usize,
+) -> Vec<(u32, Vec<[f32; 3]>, usize)> {
     // 1. クラスタIDごとに座標をグループ化
     let mut clusters: std::collections::HashMap<u32, Vec<[f32; 3]>> =
         std::collections::HashMap::new();
@@ -7,17 +13,17 @@ pub fn extract_human_clusters(pts: &[[f32; 3]], cluster_ids: &[u32]) -> Vec<[f32
         clusters.entry(id).or_insert_with(Vec::new).push(pts[i]);
     }
 
-    println!("Found {} total clusters", clusters.len());
+    debug!("Found {} total clusters", clusters.len());
 
-    let mut human_clusters: Vec<[f32; 3]> = Vec::new();
-    let mut human_cluster_count = 0;
+    let mut human_cluster_pairs: Vec<(u32, Vec<[f32; 3]>, usize)> = Vec::new();
+    let mut max_count = 0;
 
     // 2. クラスタごとのサイズ判定
     for (_id, cluster_pts) in clusters.into_iter() {
         let count = cluster_pts.len();
 
-        // ノイズ除去: 30点未満の小さな塊は無視 (ボクセルサイズ0.05mなら適度な値)
-        if count < 30 {
+        // ノイズ除去: min_points未満の小さな塊は無視 (ボクセルサイズ0.05mなら適度な値)
+        if count < min_points {
             continue;
         }
 
@@ -57,16 +63,22 @@ pub fn extract_human_clusters(pts: &[[f32; 3]], cluster_ids: &[u32]) -> Vec<[f32
         // 人サイズの条件設定
         // 人の高さ(0.8m〜2.0m) かつ 幅・奥行きが広すぎない(1.0m以下)
         let is_human_height = height_z > 0.8 && height_z < 2.0;
-        let is_human_width = width_x < 1.0 && width_y < 1.0;
+        let is_human_width = width_x < 1.5 && width_y < 1.5;
 
         // 天井の残骸は「平べったい（高さがない）」か「点数が少なすぎる」のでここで弾かれます
         if is_human_height && is_human_width {
-            human_clusters.extend(cluster_pts);
-            human_cluster_count += 1;
+            // if count > max_count {
+            //     max_count = count;
+            //     human_cluster_pairs.push((_id, cluster_pts, count));
+            // }
+            max_count = count;
+            human_cluster_pairs.push((_id, cluster_pts, count));
         }
     }
 
-    println!("Extracted {} human-like clusters", human_cluster_count);
+    debug!("Extracted {} human-like clusters", human_cluster_pairs.len());
 
-    human_clusters
+    human_cluster_pairs.sort_by_key(|(_, _, count)| std::cmp::Reverse(*count));
+
+    human_cluster_pairs
 }

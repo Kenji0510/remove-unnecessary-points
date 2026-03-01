@@ -1844,6 +1844,7 @@ dependencies = [
  "pcd-rs",
  "plotters",
  "rayon",
+ "regex",
  "rustc-hash",
  "vulkano 0.35.2",
  "vulkano-shaders",
